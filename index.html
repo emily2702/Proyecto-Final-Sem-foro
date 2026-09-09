@@ -1,30 +1,966 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Semáforo Contador IRTRA Petapa</title>
+
+    <title>Semáforo Irtra Petapa</title>
+
+    <style>
+
+        /* =========================
+           CONFIGURACIÓN GENERAL
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            background: linear-gradient(
+                135deg,
+                #ffd6e7,
+                #ffe8c7,
+                #fff8bd,
+                #d9f7d6,
+                #ccecff,
+                #dfd1ff
+            );
+            background-size: 400% 400%;
+            animation: fondo 15s ease infinite;
+            color: #555;
+            overflow-x: hidden;
+        }
+
+        @keyframes fondo {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+
+        /* =========================
+           ESTRELLITAS DECORATIVAS
+        ========================= */
+
+        .estrella {
+            position: fixed;
+            font-size: 22px;
+            opacity: 0.45;
+            z-index: -1;
+            animation: flotar 5s ease-in-out infinite;
+        }
+
+        .e1 { top: 15%; left: 5%; }
+        .e2 { top: 35%; right: 7%; animation-delay: 1s; }
+        .e3 { top: 70%; left: 8%; animation-delay: 2s; }
+        .e4 { top: 85%; right: 12%; animation-delay: 3s; }
+
+        @keyframes flotar {
+            0%,100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-15px) rotate(15deg);
+            }
+        }
+
+
+        /* =========================
+           BARRA DE NAVEGACIÓN
+        ========================= */
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 15px;
+            background: rgba(255,255,255,0.78);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 5px 20px rgba(100,100,100,0.12);
+            text-align: center;
+        }
+
+        nav a {
+            display: inline-block;
+            margin: 5px;
+            padding: 10px 18px;
+            text-decoration: none;
+            color: #666;
+            font-weight: bold;
+            border-radius: 30px;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            background: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.12);
+        }
+
+
+        /* =========================
+           ENCABEZADO
+        ========================= */
+
+        header {
+            min-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .mini-texto {
+            font-size: 17px;
+            color: #777;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: clamp(45px, 9vw, 90px);
+            font-weight: 900;
+            background: linear-gradient(
+                90deg,
+                #ff9fbd,
+                #ffc77d,
+                #aee6a8,
+                #91d8f7,
+                #bda7f5
+            );
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 3px 3px 0 rgba(255,255,255,0.5);
+            margin-bottom: 20px;
+        }
+
+        .subtitulo {
+            max-width: 700px;
+            font-size: 20px;
+            line-height: 1.7;
+            color: #666;
+        }
+
+        .boton {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 14px 30px;
+            border-radius: 40px;
+            background: white;
+            color: #777;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            transition: 0.3s;
+        }
+
+        .boton:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.16);
+        }
+
+
+        /* =========================
+           SEMÁFORO DECORATIVO
+        ========================= */
+
+        .semaforo {
+            margin-top: 35px;
+            background: #707070;
+            padding: 13px;
+            border-radius: 30px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.18);
+        }
+
+        .luz {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .roja { background: #ff9cac; }
+        .amarilla { background: #ffe18c; }
+        .verde { background: #a7e8a5; }
+
+
+        /* =========================
+           SECCIONES
+        ========================= */
+
+        section {
+            min-height: 85vh;
+            padding: 90px 8%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .titulo-seccion {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .titulo-seccion h2 {
+            font-size: clamp(35px, 5vw, 55px);
+            margin-bottom: 12px;
+            background: linear-gradient(
+                90deg,
+                #ee91ad,
+                #eebd78,
+                #8dcf98,
+                #7ec5e7,
+                #ae94e5
+            );
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .titulo-seccion p {
+            color: #777;
+            font-size: 17px;
+        }
+
+
+        /* =========================
+           TARJETAS
+        ========================= */
+
+        .contenedor {
+            max-width: 1100px;
+            width: 100%;
+            margin: auto;
+        }
+
+        .tarjetas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+        }
+
+        .tarjeta {
+            background: rgba(255,255,255,0.78);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 12px 30px rgba(90,90,90,0.12);
+            border: 2px solid rgba(255,255,255,0.7);
+            transition: 0.35s;
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-10px) rotate(0.5deg);
+            box-shadow: 0 18px 35px rgba(90,90,90,0.18);
+        }
+
+        .icono {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        .tarjeta h3 {
+            font-size: 23px;
+            margin-bottom: 12px;
+            color: #777;
+        }
+
+        .tarjeta p {
+            line-height: 1.7;
+            color: #666;
+        }
+
+
+        /* =========================
+           CIRCUITO
+        ========================= */
+
+        #circuito {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .circuito-box {
+            background: rgba(255,255,255,0.82);
+            border-radius: 35px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(80,80,80,0.12);
+            text-align: center;
+        }
+
+        .circuito-box p {
+            font-size: 18px;
+            line-height: 1.8;
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .leds {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 35px 0;
+            flex-wrap: wrap;
+        }
+
+        .led {
+            padding: 20px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            background: white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+
+        /* =========================
+           INVESTIGACIÓN
+        ========================= */
+
+        .investigacion {
+            background: linear-gradient(
+                135deg,
+                rgba(255,220,235,0.5),
+                rgba(215,238,255,0.5)
+            );
+        }
+
+
+        /* =========================
+           INFOGRAFÍA
+        ========================= */
+
+        .info-card {
+            text-align: center;
+            padding: 50px;
+            background: rgba(255,255,255,0.85);
+            border-radius: 35px;
+            box-shadow: 0 15px 35px rgba(80,80,80,0.12);
+        }
+
+        .info-card .emoji {
+            font-size: 75px;
+            margin-bottom: 20px;
+        }
+
+        .info-card p {
+            max-width: 750px;
+            margin: auto;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+
+        /* =========================
+           PODCAST
+        ========================= */
+
+        .podcast {
+            background: linear-gradient(
+                135deg,
+                rgba(225,215,255,0.55),
+                rgba(255,215,235,0.55)
+            );
+        }
+
+        .podcast-box {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            border-radius: 35px;
+            padding: 45px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(80,80,80,0.12);
+        }
+
+        .microfono {
+            font-size: 75px;
+            margin-bottom: 20px;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 25px;
+        }
+
+
+        /* =========================
+           CONCLUSIÓN
+        ========================= */
+
+        .conclusion-box {
+            max-width: 900px;
+            margin: auto;
+            background: rgba(255,255,255,0.86);
+            border-radius: 40px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(80,80,80,0.12);
+        }
+
+        .conclusion-box p {
+            font-size: 20px;
+            line-height: 1.9;
+        }
+
+
+        /* =========================
+           PIE DE PÁGINA
+        ========================= */
+
+        footer {
+            padding: 40px 20px;
+            text-align: center;
+            background: rgba(255,255,255,0.7);
+            color: #777;
+        }
+
+        footer .corazon {
+            font-size: 25px;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            nav a {
+                padding: 7px 10px;
+                font-size: 13px;
+            }
+
+            section {
+                padding: 70px 5%;
+            }
+
+            .circuito-box,
+            .podcast-box,
+            .conclusion-box,
+            .info-card {
+                padding: 28px 20px;
+            }
+
+            .subtitulo {
+                font-size: 17px;
+            }
+        }
+
+    </style>
 </head>
+
 
 <body>
 
-    <h1>Semáforo Contador de Personas</h1>
+    <!-- DECORACIÓN -->
+    <div class="estrella e1">✦</div>
+    <div class="estrella e2">✧</div>
+    <div class="estrella e3">✦</div>
+    <div class="estrella e4">✧</div>
 
-    <h2>IRTRA Petapa</h2>
 
-    <p>
-        Nuestro proyecto consiste en desarrollar un sistema
-        que permita controlar el ingreso de personas mediante
-        un semáforo y un contador.
-    </p>
+    <!-- =========================
+         MENÚ
+    ========================= -->
 
-    <h2>¿Cómo funciona?</h2>
+    <nav>
 
-    <p>
-        El sistema utiliza sensores para detectar el ingreso
-        y salida de personas y mostrar la cantidad actual
-        dentro del área.
-    </p>
+        <a href="#inicio">Inicio</a>
+
+        <a href="#circuito">
+            🚦 Circuito
+        </a>
+
+        <a href="#investigacion">
+            📚 Investigación
+        </a>
+
+        <a href="#infografia">
+            📝 Infografía
+        </a>
+
+        <a href="#podcast">
+            🎙️ Podcast
+        </a>
+
+        <a href="#conclusion">
+            🌈 Conclusión
+        </a>
+
+    </nav>
+
+
+    <!-- =========================
+         INICIO
+    ========================= -->
+
+    <header id="inicio">
+
+        <div class="mini-texto">
+            PROYECTO DE TECNOLOGÍA ✦
+        </div>
+
+        <h1>
+            Semáforo<br>
+            Irtra Petapa
+        </h1>
+
+        <p class="subtitulo">
+            Una propuesta tecnológica para controlar y visualizar
+            el ingreso de personas mediante un sistema de
+            semáforo y contador.
+        </p>
+
+
+        <!-- SEMÁFORO -->
+
+        <div class="semaforo">
+
+            <div class="luz roja"></div>
+
+            <div class="luz amarilla"></div>
+
+            <div class="luz verde"></div>
+
+        </div>
+
+
+        <a href="#circuito" class="boton">
+            ✨ Conocer el proyecto
+        </a>
+
+    </header>
+
+
+
+    <!-- =========================
+         CIRCUITO TINKERCAD
+    ========================= -->
+
+    <section id="circuito">
+
+        <div class="contenedor">
+
+            <div class="titulo-seccion">
+
+                <h2>
+                    🚦 Circuito Tinkercad
+                </h2>
+
+                <p>
+                    La parte electrónica de nuestro proyecto
+                </p>
+
+            </div>
+
+
+            <div class="circuito-box">
+
+                <p>
+                    Nuestro circuito fue diseñado en
+                    <strong>Tinkercad</strong> para representar
+                    el funcionamiento de un sistema capaz de
+                    detectar y controlar el ingreso de personas.
+                </p>
+
+
+                <div class="leds">
+
+                    <div class="led">
+                        🔴 Alto
+                    </div>
+
+                    <div class="led">
+                        🟡 Precaución
+                    </div>
+
+                    <div class="led">
+                        🟢 Acceso
+                    </div>
+
+                </div>
+
+
+                <p>
+                    El sistema utiliza componentes electrónicos
+                    que permiten representar mediante luces el
+                    estado del acceso y llevar un conteo de las
+                    personas que ingresan.
+                </p>
+
+
+                <!-- AQUÍ PUEDEN PONER EL LINK DE TINKERCAD -->
+
+                <a
+                    href="#"
+                    class="boton"
+                    target="_blank"
+                >
+                    🔧 Ver circuito en Tinkercad
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         INVESTIGACIÓN FORMAL
+    ========================= -->
+
+    <section
+        id="investigacion"
+        class="investigacion"
+    >
+
+        <div class="contenedor">
+
+            <div class="titulo-seccion">
+
+                <h2>
+                    📚 Investigación Formal
+                </h2>
+
+                <p>
+                    Conociendo el problema y su posible solución
+                </p>
+
+            </div>
+
+
+            <div class="tarjetas">
+
+
+                <div class="tarjeta">
+
+                    <div class="icono">
+                        💡
+                    </div>
+
+                    <h3>
+                        Planteamiento
+                    </h3>
+
+                    <p>
+                        Investigación sobre la necesidad de
+                        controlar el flujo de personas en espacios
+                        recreativos con alta afluencia.
+                    </p>
+
+                </div>
+
+
+                <div class="tarjeta">
+
+                    <div class="icono">
+                        🔎
+                    </div>
+
+                    <h3>
+                        Objetivo
+                    </h3>
+
+                    <p>
+                        Diseñar una alternativa tecnológica que
+                        permita visualizar de manera sencilla
+                        la cantidad de personas dentro de un área.
+                    </p>
+
+                </div>
+
+
+                <div class="tarjeta">
+
+                    <div class="icono">
+                        ⚙️
+                    </div>
+
+                    <h3>
+                        Tecnología
+                    </h3>
+
+                    <p>
+                        El proyecto integra programación,
+                        electrónica y sensores para crear
+                        un sistema funcional.
+                    </p>
+
+                </div>
+
+
+                <div class="tarjeta">
+
+                    <div class="icono">
+                        🌎
+                    </div>
+
+                    <h3>
+                        Importancia
+                    </h3>
+
+                    <p>
+                        La tecnología puede utilizarse para
+                        mejorar la organización, seguridad y
+                        experiencia de las personas.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         INFOGRAFÍA
+    ========================= -->
+
+    <section id="infografia">
+
+        <div class="contenedor">
+
+            <div class="titulo-seccion">
+
+                <h2>
+                    📝 Infografía
+                </h2>
+
+                <p>
+                    Información resumida de nuestro proyecto
+                </p>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="emoji">
+                    🌈
+                </div>
+
+                <p>
+                    En esta sección se presentará la infografía
+                    realizada por nuestro equipo, donde se
+                    explicarán de manera visual los principales
+                    elementos, funcionamiento y características
+                    del <strong>Semáforo Irtra Petapa</strong>.
+                </p>
+
+
+                <!-- AQUÍ PUEDEN AGREGAR SU IMAGEN -->
+
+                <div
+                    style="
+                    margin-top:30px;
+                    padding:35px;
+                    border-radius:25px;
+                    background:linear-gradient(
+                        120deg,
+                        #ffd9e7,
+                        #fff0c9,
+                        #dcf7d9,
+                        #d4edff,
+                        #e4d8ff
+                    );
+                    "
+                >
+
+                    <strong>
+                        ✨ ESPACIO PARA LA INFOGRAFÍA ✨
+                    </strong>
+
+                    <p style="margin-top:10px;">
+                        Pueden colocar aquí la imagen
+                        de su infografía.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         PODCAST
+    ========================= -->
+
+    <section
+        id="podcast"
+        class="podcast"
+    >
+
+        <div class="contenedor">
+
+            <div class="titulo-seccion">
+
+                <h2>
+                    🎙️ Podcast
+                </h2>
+
+                <p>
+                    Escucha nuestro proyecto desde otra perspectiva
+                </p>
+
+            </div>
+
+
+            <div class="podcast-box">
+
+                <div class="microfono">
+                    🎙️
+                </div>
+
+                <h3 style="
+                    font-size:28px;
+                    color:#888;
+                    margin-bottom:15px;
+                ">
+                    Nuestro Podcast
+                </h3>
+
+                <p style="
+                    line-height:1.8;
+                    font-size:17px;
+                ">
+                    En este espacio compartiremos un podcast
+                    donde hablaremos sobre el proyecto, su
+                    funcionamiento, el proceso de creación y
+                    lo que aprendimos durante su desarrollo.
+                </p>
+
+
+                <!--
+
+                CUANDO TENGAN EL AUDIO:
+
+                1. Suban el archivo MP3 a GitHub.
+                2. Cambien "podcast.mp3" por el nombre del archivo.
+
+                -->
+
+                <audio controls>
+
+                    <source
+                        src="podcast.mp3"
+                        type="audio/mpeg"
+                    >
+
+                    Tu navegador no puede reproducir este audio.
+
+                </audio>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         CONCLUSIÓN
+    ========================= -->
+
+    <section id="conclusion">
+
+        <div class="contenedor">
+
+            <div class="titulo-seccion">
+
+                <h2>
+                    🌈 Nuestra Conclusión
+                </h2>
+
+                <p>
+                    Lo que aprendimos durante este proyecto
+                </p>
+
+            </div>
+
+
+            <div class="conclusion-box">
+
+                <p>
+
+                    La realización del proyecto
+                    <strong>Semáforo Irtra Petapa</strong>
+                    nos permitió comprender cómo la tecnología,
+                    la programación y la electrónica pueden
+                    combinarse para crear soluciones a
+                    situaciones de la vida cotidiana.
+
+                    <br><br>
+
+                    Durante el proceso aprendimos a trabajar
+                    en equipo, investigar, diseñar un circuito,
+                    plantear una solución tecnológica y
+                    comunicar nuestras ideas mediante diferentes
+                    herramientas digitales.
+
+                    <br><br>
+
+                    Más que construir un circuito, este proyecto
+                    nos permitió descubrir que una idea puede
+                    convertirse en una propuesta tecnológica
+                    cuando existe creatividad, organización y
+                    trabajo en equipo.
+
+                    <br><br>
+
+                    ✨ <strong>
+                    La tecnología comienza con una idea.
+                    </strong>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
+    <footer>
+
+        <div class="corazon">
+            🌸 ✦ 🌈 ✦ 🌸
+        </div>
+
+        <br>
+
+        <p>
+            Proyecto de Tecnología · Semáforo Irtra Petapa
+        </p>
+
+        <p style="margin-top:8px;">
+            Hecho con creatividad, tecnología y trabajo en equipo ♡
+        </p>
+
+    </footer>
+
 
 </body>
 </html>
+```
