@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -59,6 +58,32 @@
                 transform: translateY(-15px) rotate(15deg);
             }
         }
+
+
+        /* LOGO IRTRA PETAPA */
+        .logo-irtra {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            width: 130px;
+            height: auto;
+            z-index: 200;
+            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.15));
+            transition: 0.3s;
+        }
+
+        .logo-irtra:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 600px) {
+            .logo-irtra {
+                width: 85px;
+                top: 10px;
+                right: 10px;
+            }
+        }
+
 
         nav {
             position: sticky;
@@ -397,6 +422,9 @@
 
 <body>
 
+    <!-- LOGO IRTRA PETAPA -->
+    <img src="file_00000000f09482309f4f2ba80a4ae66e (1).png" alt="Semáforo Irtra Petapa" class="logo-irtra">
+
    
     <div class="estrella e1">✦</div>
     <div class="estrella e2">✧</div>
@@ -643,4 +671,3 @@
 
 </body>
 </html>
-```
