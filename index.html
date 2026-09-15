@@ -286,7 +286,7 @@
     <section class="panel" data-title="Investigación" aria-hidden="true">
       <div class="sheet">
         <div class="section-head"><div class="eyebrow">Documento formal</div><h2>INVESTIGACIÓN</h2><p>Consulta directa de la investigación final en sus dos formatos de entrega: PDF y Microsoft Word.</p></div><div class="rainbow-line"></div>
-        <div class="doc-view"><h3>Investigación formal · PDF</h3><p class="doc-desc">Versión final del documento de investigación del proyecto.</p><iframe class="embed-frame" id="researchPdf" title="Investigación formal en PDF" src="PDF proyecto final TICS (1).pdf#toolbar=1&navpanes=0&view=FitH"></iframe><div class="doc-link-row"><a class="doc-link" href="PDF proyecto final TICS (1).pdf" target="_blank" rel="noopener">ABRIR PDF COMPLETO</a></div></div>
+        <div class="doc-view"><h3>Investigación formal · PDF</h3><p class="doc-desc">Versión final del documento de investigación del proyecto.</p><iframe class="embed-frame" id="researchPdf" title="Investigación formal en PDF"></iframe><div class="doc-link-row"><a class="doc-link" id="researchPdfLink" href="PDF proyecto final TICS (1).pdf" target="_blank" rel="noopener">ABRIR PDF COMPLETO</a></div></div>
         <div class="doc-view"><h3>Investigación formal · Word</h3><p class="doc-desc">Versión editable en Microsoft Word del mismo documento de investigación.</p><iframe class="embed-frame" id="wordViewer" title="Investigación formal en Word"></iframe><div class="viewer-note">Si el visor de Microsoft Office tarda en cargar o no está disponible en el navegador, el documento puede abrirse directamente desde el botón inferior.</div><div class="doc-link-row"><a class="doc-link" id="wordDirectLink" href="Word proyecto final TICSS.docx" target="_blank" rel="noopener">ABRIR DOCUMENTO WORD</a></div></div>
       </div>
     </section>
@@ -331,7 +331,7 @@
     const dotButtons=[...dots.children];
 
     function sync(){navButtons.forEach(b=>b.classList.toggle('active',Number(b.dataset.go)===current));dotButtons.forEach((b,i)=>b.classList.toggle('active',i===current));count.textContent=String(current+1).padStart(2,'0')+' / '+String(panels.length).padStart(2,'0');document.title=panels[current].dataset.title+' | Semáforo IRTRA Petapa'}
-    function go(i){i=(i+panels.length)%panels.length;if(i===current){window.scrollTo({top:0,behavior:'smooth'});return}panels[current].classList.remove('active');panels[current].setAttribute('aria-hidden','true');current=i;panels[current].classList.add('active');panels[current].setAttribute('aria-hidden','false');window.scrollTo({top:0,behavior:'smooth'});sync()}
+    function go(i){i=(i+panels.length)%panels.length;if(i===current){window.scrollTo({top:0,behavior:'smooth'});loadPdfForPanel(current);return}panels[current].classList.remove('active');panels[current].setAttribute('aria-hidden','true');current=i;panels[current].classList.add('active');panels[current].setAttribute('aria-hidden','false');window.scrollTo({top:0,behavior:'smooth'});sync();loadPdfForPanel(current)}
     allGo.forEach(b=>b.addEventListener('click',()=>go(Number(b.dataset.go))));
     document.getElementById('prev').addEventListener('click',()=>go(current-1));document.getElementById('next').addEventListener('click',()=>go(current+1));
     document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1)});
@@ -374,25 +374,35 @@
       wordDirectLink.href=encodeURI(wordName);
     }
 
-    // Carga robusta del PDF de la infografía, incluyendo variantes Unicode del acento.
-    const infographicPdfCandidates=['INFOGRAFÍA PROYECTO FINAL DE TICS (PDF).pdf','INFOGRAFÍA PROYECTO FINAL DE TICS (PDF).pdf'];
-    async function loadPdfFrame(frame,link,candidates){
-      if(location.protocol==='file:'){frame.src=encodeURI(candidates[0])+'#toolbar=1&navpanes=0&view=FitH';link.href=encodeURI(candidates[0]);return}
-      for(const path of candidates){
-        try{
-          const r=await fetch(encodeURI(path),{cache:'no-store'});
-          if(!r.ok)continue;
-          const raw=await r.blob();
-          const pdfBlob=new Blob([raw],{type:'application/pdf'});
-          frame.src=URL.createObjectURL(pdfBlob)+'#toolbar=1&navpanes=0&view=FitH';
-          link.href=encodeURI(path);
-          return;
-        }catch(e){}
-      }
-      frame.src=encodeURI(candidates[0])+'#toolbar=1&navpanes=0&view=FitH';
-      link.href=encodeURI(candidates[0]);
+    // Visores PDF nativos. Se cargan cuando su sección ya es visible para evitar
+    // que el visor integrado del navegador se inicialice oculto y quede en blanco.
+    const pdfFiles={
+      research:'PDF%20proyecto%20final%20TICS%20%281%29.pdf',
+      infographic:'INFOGRAFI%CC%81A%20PROYECTO%20FINAL%20DE%20TICS%20%28PDF%29.pdf'
+    };
+
+    function pdfAssetUrl(path){return new URL(path,document.baseURI).href}
+
+    function mountPdf(frameId,linkId,path){
+      const frame=document.getElementById(frameId),link=document.getElementById(linkId);
+      const url=pdfAssetUrl(path);
+      link.href=url;
+      if(frame.dataset.loaded==='true')return;
+      frame.src=url+'#toolbar=1&navpanes=0&view=FitH';
+      frame.dataset.loaded='true';
     }
-    loadPdfFrame(document.getElementById('infographicPdf'),document.getElementById('infographicPdfLink'),infographicPdfCandidates);
+
+    function loadPdfForPanel(panelIndex){
+      if(panelIndex!==3&&panelIndex!==4)return;
+      window.setTimeout(()=>{
+        if(current!==panelIndex)return;
+        if(panelIndex===3)mountPdf('researchPdf','researchPdfLink',pdfFiles.research);
+        if(panelIndex===4)mountPdf('infographicPdf','infographicPdfLink',pdfFiles.infographic);
+      },600);
+    }
+
+    document.getElementById('researchPdfLink').href=pdfAssetUrl(pdfFiles.research);
+    document.getElementById('infographicPdfLink').href=pdfAssetUrl(pdfFiles.infographic);
   </script>
 </body>
 </html>
