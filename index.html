@@ -1,839 +1,467 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#17165a" />
+  <meta name="description" content="Proyecto Final de TICS: Semáforo IRTRA Petapa. Grupo 9, Undécimo E." />
+  <title>Semáforo IRTRA Petapa | Grupo 9</title>
+  <style>
+    :root {
+      --navy:#17165a;
+      --navy-2:#26257a;
+      --ink:#17172b;
+      --paper:#fffdf8;
+      --white:#ffffff;
+      --red:#ff245d;
+      --yellow:#ffd21f;
+      --cyan:#19c7ef;
+      --green:#62dc32;
+      --orange:#ff8b2d;
+      --violet:#9329f6;
+      --pink:#f65aa8;
+      --teal:#19d7ca;
+      --shadow:0 18px 0 rgba(23,22,90,.14), 0 28px 58px rgba(23,22,90,.20);
+      --line:rgba(23,22,90,.14);
+      --radius:34px;
+      --font:"Century Gothic","Apple Gothic","URW Gothic L",Avenir,Montserrat,Arial,sans-serif;
+    }
 
-    <title>Semáforo Irtra Petapa</title>
+    * { box-sizing:border-box; }
+    html,body { width:100%; height:100%; margin:0; }
+    body {
+      font-family:var(--font);
+      color:var(--ink);
+      overflow:hidden;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(255,36,93,.20), transparent 23%),
+        radial-gradient(circle at 92% 12%, rgba(25,199,239,.22), transparent 25%),
+        radial-gradient(circle at 77% 91%, rgba(147,41,246,.18), transparent 25%),
+        linear-gradient(135deg,#fff8f0,#f7fbff 48%,#fff8fd);
+    }
 
-    <style>
+    button,a,input { font:inherit; }
+    button,a { -webkit-tap-highlight-color:transparent; }
+    a { color:inherit; text-decoration:none; }
+    button { border:0; cursor:pointer; }
+    img,video { display:block; max-width:100%; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            scroll-behavior: smooth;
-        }
+    .noise {
+      position:fixed; inset:0; pointer-events:none; opacity:.04; z-index:1;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.75'/%3E%3C/svg%3E");
+    }
 
-        body {
-            font-family: "Trebuchet MS", Arial, sans-serif;
-            background: linear-gradient(
-                135deg,
-                #ffd6e7,
-                #ffe8c7,
-                #fff8bd,
-                #d9f7d6,
-                #ccecff,
-                #dfd1ff
-            );
-            background-size: 400% 400%;
-            animation: fondo 15s ease infinite;
-            color: #555;
-            overflow-x: hidden;
-        }
+    .bg-splash { position:fixed; border-radius:50%; filter:blur(1px); z-index:0; pointer-events:none; }
+    .s1{ width:280px;height:280px;left:-100px;bottom:-90px;background:var(--yellow);opacity:.19; }
+    .s2{ width:380px;height:380px;right:-170px;top:22%;background:var(--violet);opacity:.12; }
+    .s3{ width:220px;height:220px;left:36%;top:-120px;background:var(--teal);opacity:.12; }
 
-        @keyframes fondo {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+    .checker {
+      position:fixed; right:-65px; bottom:-38px; width:280px; height:160px; opacity:.12; transform:rotate(-12deg); z-index:0;
+      background-size:40px 40px;
+      background-image:linear-gradient(45deg,var(--navy) 25%,transparent 25%),linear-gradient(-45deg,var(--navy) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--navy) 75%),linear-gradient(-45deg,transparent 75%,var(--navy) 75%);
+      background-position:0 0,0 20px,20px -20px,-20px 0;
+    }
 
-        .estrella {
-            position: fixed;
-            font-size: 22px;
-            opacity: 0.45;
-            z-index: -1;
-            animation: flotar 5s ease-in-out infinite;
-        }
+    .topbar {
+      position:fixed; z-index:50; top:18px; left:50%; transform:translateX(-50%);
+      width:min(1180px,calc(100% - 34px)); height:64px;
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      padding:9px 11px 9px 18px;
+      background:rgba(255,255,255,.82);
+      border:2px solid rgba(255,255,255,.95);
+      border-radius:999px;
+      box-shadow:0 10px 34px rgba(23,22,90,.16);
+      backdrop-filter:blur(18px);
+    }
+    .brand-mini { display:flex; align-items:center; gap:12px; min-width:0; }
+    .traffic-mini { display:flex; gap:5px; background:var(--navy); padding:7px; border-radius:13px; box-shadow:inset 0 -3px 0 rgba(0,0,0,.15); }
+    .traffic-mini i{width:9px;height:9px;border-radius:50%;display:block;box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
+    .traffic-mini i:nth-child(1){background:var(--red)}.traffic-mini i:nth-child(2){background:var(--yellow)}.traffic-mini i:nth-child(3){background:var(--green)}
+    .brand-mini strong{font-size:13px;letter-spacing:.12em;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .nav-pills { display:flex; gap:6px; align-items:center; overflow:auto; scrollbar-width:none; }
+    .nav-pills::-webkit-scrollbar{display:none}
+    .nav-pills button { background:transparent; color:#58586b; font-size:12px; font-weight:700; padding:11px 13px; border-radius:999px; white-space:nowrap; transition:.25s ease; }
+    .nav-pills button:hover{background:#f3f1ff;color:var(--navy)}
+    .nav-pills button.active{background:var(--navy);color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.14)}
+    .github-mini { width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#111;color:#fff;flex:0 0 auto;transition:.2s ease; }
+    .github-mini:hover{transform:translateY(-2px) rotate(-4deg)}
+    .github-mini svg{width:22px;height:22px;fill:currentColor}
 
-        .e1 { top: 15%; left: 5%; }
-        .e2 { top: 35%; right: 7%; animation-delay: 1s; }
-        .e3 { top: 70%; left: 8%; animation-delay: 2s; }
-        .e4 { top: 85%; right: 12%; animation-delay: 3s; }
+    .viewport { position:fixed; inset:0; z-index:2; }
+    .panel {
+      position:absolute; inset:0; display:grid; place-items:center; padding:104px 28px 94px;
+      opacity:0; transform:translate3d(40px,0,0) scale(.985); pointer-events:none;
+      transition:opacity .52s cubic-bezier(.2,.8,.2,1),transform .58s cubic-bezier(.2,.8,.2,1);
+    }
+    .panel.active { opacity:1;transform:translate3d(0,0,0) scale(1);pointer-events:auto; }
+    .panel.exit-left{opacity:0;transform:translate3d(-45px,0,0) scale(.985)}
+    .panel.exit-right{opacity:0;transform:translate3d(45px,0,0) scale(.985)}
 
-        @keyframes flotar {
-            0%,100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-15px) rotate(15deg);
-            }
-        }
+    .panel-scroll { width:min(1180px,100%); max-height:calc(100vh - 206px); overflow:auto; padding:8px 8px 28px; scrollbar-width:thin; scrollbar-color:#c8c4e7 transparent; }
+    .panel-scroll::-webkit-scrollbar{width:8px}.panel-scroll::-webkit-scrollbar-thumb{background:#c8c4e7;border-radius:999px}
 
-        nav {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 15px;
-            background: rgba(255,255,255,0.78);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 5px 20px rgba(100,100,100,0.12);
-            text-align: center;
-        }
+    .sticker-card {
+      position:relative; background:rgba(255,255,255,.94); border:6px solid #fff; outline:2px solid rgba(23,22,90,.07); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
+    }
+    .sticker-card:before { content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit; box-shadow:inset 0 0 0 2px rgba(23,22,90,.06); }
 
-        nav a {
-            display: inline-block;
-            margin: 5px;
-            padding: 10px 18px;
-            text-decoration: none;
-            color: #666;
-            font-weight: bold;
-            border-radius: 30px;
-            transition: 0.3s;
-        }
+    .hero-card { min-height:min(680px,calc(100vh - 220px)); display:grid; grid-template-columns:1.05fr .95fr; align-items:center; gap:36px; padding:clamp(30px,5vw,68px); }
+    .hero-copy { position:relative; z-index:2; }
+    .kicker { display:inline-flex;align-items:center;gap:9px;background:#f1efff;color:var(--navy);border:2px solid #ded9ff;border-radius:999px;padding:9px 13px;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase; }
+    .kicker .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(98,220,50,.18)}
+    h1,h2,h3,p { margin-top:0; }
+    h1 { font-size:clamp(46px,7vw,92px); line-height:.9; letter-spacing:-.055em; margin:23px 0 20px; color:var(--navy); text-transform:uppercase; }
+    .rainbow-title span{display:inline-block;filter:drop-shadow(0 4px 0 rgba(23,22,90,.10))}
+    .rainbow-title span:nth-child(1){color:var(--red)}.rainbow-title span:nth-child(2){color:var(--yellow)}.rainbow-title span:nth-child(3){color:var(--cyan)}.rainbow-title span:nth-child(4){color:var(--green)}.rainbow-title span:nth-child(5){color:var(--orange)}.rainbow-title span:nth-child(6){color:var(--violet)}.rainbow-title span:nth-child(7){color:var(--pink)}
+    .hero-copy .lead { max-width:700px; color:#555569; font-size:clamp(16px,1.5vw,20px); line-height:1.7; margin-bottom:28px; }
+    .meta-row{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:26px}.chip{border-radius:999px;padding:9px 12px;border:2px solid #ece9fb;background:#fff;font-size:12px;font-weight:800;color:#55556b;box-shadow:0 5px 0 #f2f0fb}
+    .cta-row { display:flex;flex-wrap:wrap;gap:12px; }
+    .btn { display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:18px;padding:15px 19px;font-weight:800;font-size:14px;transition:.2s ease;box-shadow:0 7px 0 rgba(23,22,90,.16); }
+    .btn:hover{transform:translateY(-2px);box-shadow:0 9px 0 rgba(23,22,90,.13)}.btn:active{transform:translateY(3px);box-shadow:0 4px 0 rgba(23,22,90,.14)}
+    .btn-primary{background:linear-gradient(135deg,var(--yellow),#ffae23);color:var(--navy);border:2px solid #ffbd22}
+    .btn-dark{background:#111;color:#fff;border:2px solid #111}.btn-dark svg{width:20px;height:20px;fill:currentColor}
+    .btn-soft{background:#f5f3ff;color:var(--navy);border:2px solid #ded9ff;box-shadow:0 7px 0 rgba(111,91,220,.13)}
+    .btn-red{background:linear-gradient(135deg,var(--red),#ff5b7e);color:#fff;border:2px solid #ff5f82}
+    .btn[aria-disabled="true"]{opacity:.5;pointer-events:none;filter:grayscale(.3)}
 
-        nav a:hover {
-            background: white;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 12px rgba(0,0,0,0.12);
-        }
+    .hero-visual { position:relative;min-height:430px;display:grid;place-items:center; }
+    .logo-shell { position:relative;width:min(100%,560px);min-height:300px;display:grid;place-items:center;background:linear-gradient(135deg,#fff,#f8f6ff);border-radius:42px;border:6px solid #fff;box-shadow:0 22px 0 rgba(23,22,90,.10),0 34px 62px rgba(23,22,90,.18);transform:rotate(1deg);padding:22px;overflow:hidden; }
+    .logo-shell:after{content:"";position:absolute;width:250px;height:250px;border-radius:50%;background:var(--cyan);opacity:.09;right:-90px;top:-100px}
+    .logo-shell img{position:relative;z-index:1;max-height:330px;object-fit:contain;border-radius:22px;}
+    .logo-fallback{display:none;text-align:center;color:var(--navy);font-weight:900;font-size:36px;line-height:1.05;text-transform:uppercase}.logo-fallback small{font-size:15px;letter-spacing:.18em;display:block;margin-top:10px;color:#676780}
+    .orb { position:absolute;border-radius:50%;border:5px solid white;box-shadow:0 10px 25px rgba(23,22,90,.18);animation:float 4.8s ease-in-out infinite; }
+    .orb.o1{width:68px;height:68px;background:var(--green);left:2%;top:13%}.orb.o2{width:48px;height:48px;background:var(--violet);right:2%;bottom:10%;animation-delay:-1.2s}.orb.o3{width:38px;height:38px;background:var(--yellow);left:15%;bottom:2%;animation-delay:-2.3s}
+    @keyframes float{50%{transform:translateY(-13px) rotate(8deg)}}
 
-        header {
-            min-height: 88vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 40px 20px;
-        }
+    .section-head { display:flex;justify-content:space-between;align-items:end;gap:26px;margin:0 4px 22px; }
+    .section-head .eyebrow{font-size:11px;letter-spacing:.17em;text-transform:uppercase;font-weight:900;color:#74738a;margin-bottom:8px}.section-head h2{margin:0;color:var(--navy);font-size:clamp(34px,4vw,60px);line-height:1;letter-spacing:-.045em;text-transform:uppercase}.section-head p{max-width:460px;margin:0;color:#666679;line-height:1.6;font-size:14px}
 
-        .mini-texto {
-            font-size: 17px;
-            color: #777;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-        }
+    .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .info-tile{padding:26px;min-height:205px;background:rgba(255,255,255,.88);border:3px solid #fff;border-radius:28px;box-shadow:0 13px 26px rgba(23,22,90,.10);position:relative;overflow:hidden}.info-tile .num{font-size:64px;font-weight:900;color:rgba(23,22,90,.08);position:absolute;right:18px;top:7px}.info-tile h3{font-size:20px;color:var(--navy);margin:36px 0 10px}.info-tile p{font-size:14px;line-height:1.65;color:#606073;margin:0}.info-tile:nth-child(1){border-bottom:8px solid var(--red)}.info-tile:nth-child(2){border-bottom:8px solid var(--cyan)}.info-tile:nth-child(3){border-bottom:8px solid var(--green)}
 
-        h1 {
-            font-size: clamp(45px, 9vw, 90px);
-            font-weight: 900;
-            background: linear-gradient(
-                90deg,
-                #ff9fbd,
-                #ffc77d,
-                #aee6a8,
-                #91d8f7,
-                #bda7f5
-            );
-            -webkit-background-clip: text;
-            color: transparent;
-            text-shadow: 3px 3px 0 rgba(255,255,255,0.5);
-            margin-bottom: 20px;
-        }
+    .ribbon { margin-top:18px; background:var(--yellow); color:var(--navy); border:4px solid white; border-radius:22px; box-shadow:0 10px 0 rgba(23,22,90,.12); padding:15px 20px; font-size:13px; font-weight:900; text-align:center; letter-spacing:.05em; }
 
-        .subtitulo {
-            max-width: 700px;
-            font-size: 20px;
-            line-height: 1.7;
-            color: #666;
-        }
+    .circuit-layout{display:grid;grid-template-columns:1.12fr .88fr;gap:18px;align-items:stretch}.media-card{padding:18px;background:#fff;border-radius:30px;border:3px solid #fff;box-shadow:0 15px 32px rgba(23,22,90,.12)}
+    .tabs{display:flex;gap:8px;margin-bottom:12px;background:#f4f2ff;padding:7px;border-radius:18px}.tab{flex:1;padding:11px 12px;border-radius:13px;background:transparent;color:#67677a;font-weight:800;font-size:13px}.tab.active{background:var(--navy);color:#fff}
+    .media-frame{position:relative;aspect-ratio:16/9;border-radius:22px;background:linear-gradient(135deg,#e9e7ff,#fef4df);overflow:hidden;display:grid;place-items:center}.media-frame video,.media-frame img{width:100%;height:100%;object-fit:contain;background:#12121b}.media-frame img{background:#f5f5fb;transition:filter .25s ease,transform .25s ease;transform-origin:center}.media-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:#6f6e82}.media-empty strong{color:var(--navy);font-size:18px;display:block;margin-bottom:7px}.media-empty small{line-height:1.55}
+    .media-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.toolbtn{padding:9px 12px;border-radius:12px;background:#f5f3ff;color:var(--navy);font-size:12px;font-weight:900;border:2px solid #ebe8ff}.toolbtn:hover{background:#ece8ff}.toolbtn.active{background:var(--navy);color:#fff}
+    .circuit-aside{display:grid;gap:14px}.status-card{padding:22px;background:linear-gradient(135deg,#fff,#f9fbff);border-radius:28px;border:3px solid #fff;box-shadow:0 15px 32px rgba(23,22,90,.11)}.status-card h3{color:var(--navy);font-size:18px;margin-bottom:13px}.bulletline{display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-top:1px solid #eceaf4;font-size:13px;color:#5f5f72;line-height:1.55}.bulletline:first-of-type{border-top:0}.b-dot{width:11px;height:11px;border-radius:50%;background:var(--cyan);flex:0 0 auto;margin-top:4px}.bulletline:nth-of-type(2) .b-dot{background:var(--orange)}.bulletline:nth-of-type(3) .b-dot{background:var(--green)}.bulletline:nth-of-type(4) .b-dot{background:var(--violet)}
 
-        .boton {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 14px 30px;
-            border-radius: 40px;
-            background: white;
-            color: #777;
-            text-decoration: none;
-            font-weight: bold;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-            transition: 0.3s;
-        }
+    .docs-layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:18px}.doc-slots{display:grid;gap:13px}.doc-slot{padding:21px;border-radius:28px;background:#fff;border:3px solid #fff;box-shadow:0 12px 28px rgba(23,22,90,.10);display:flex;gap:16px;align-items:center}.doc-icon{width:54px;height:64px;border-radius:14px;background:#f1efff;color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:12px;box-shadow:inset 0 -5px 0 rgba(23,22,90,.08)}.doc-slot h3{font-size:17px;color:var(--navy);margin:0 0 5px}.doc-slot p{font-size:12px;color:#6d6c7f;line-height:1.5;margin:0 0 10px}.doc-actions{display:flex;gap:8px;flex-wrap:wrap}.mini-action{padding:8px 10px;border-radius:10px;background:#f4f2ff;color:var(--navy);font-weight:900;font-size:11px;border:1px solid #e2defb}.mini-action.pending{background:#fff4df;color:#9b6510;border-color:#ffe0a9}
+    .requirements{padding:25px;border-radius:30px;background:linear-gradient(135deg,#18175b,#292882);color:white;box-shadow:0 18px 40px rgba(23,22,90,.22)}.requirements h3{font-size:24px;margin-bottom:18px}.req-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.req{padding:13px;border-radius:16px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:12px;line-height:1.5}.req strong{display:block;color:#fff5a6;margin-bottom:3px}
 
-        .boton:hover {
-            transform: translateY(-5px) scale(1.03);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.16);
-        }
+    .infographic-layout{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.infographic-card{padding:18px;background:#fff;border-radius:30px;box-shadow:0 15px 32px rgba(23,22,90,.12);border:3px solid #fff}.infographic-frame{aspect-ratio:4/3;border-radius:22px;overflow:hidden;background:#f6f3ff;position:relative}.infographic-frame img{width:100%;height:100%;object-fit:contain;transition:filter .25s ease,transform .25s ease}.info-actions{display:grid;gap:12px}.big-link{padding:23px;border-radius:24px;background:white;border:3px solid white;box-shadow:0 12px 28px rgba(23,22,90,.10);display:flex;justify-content:space-between;gap:16px;align-items:center;transition:.2s ease}.big-link:hover{transform:translateY(-2px)}.big-link strong{color:var(--navy);font-size:17px}.big-link small{display:block;color:#727184;margin-top:5px;line-height:1.45}.link-badge{width:50px;height:50px;border-radius:17px;background:#f1efff;color:var(--navy);display:grid;place-items:center;font-size:11px;font-weight:900}.big-link:nth-child(2) .link-badge{background:#fff1d3;color:#805b00}.big-link:nth-child(3) .link-badge{background:#e9fff0;color:#19713a}
 
-        .semaforo {
-            margin-top: 35px;
-            background: #707070;
-            padding: 13px;
-            border-radius: 30px;
-            display: flex;
-            gap: 12px;
-            box-shadow: 0 12px 25px rgba(0,0,0,0.18);
-        }
+    .podcast-wrap{display:grid;grid-template-columns:.95fr 1.05fr;gap:18px;align-items:stretch}.podcast-player{padding:22px;border-radius:32px;background:linear-gradient(135deg,#fff,#f7f3ff);box-shadow:0 17px 35px rgba(23,22,90,.12);border:3px solid #fff}.player-switch{display:flex;gap:8px;background:#eeeaff;border-radius:18px;padding:7px;margin-bottom:14px}.player-switch button{flex:1;padding:11px;border-radius:13px;background:transparent;color:#68677a;font-size:12px;font-weight:900}.player-switch button.active{background:var(--violet);color:#fff}.podcast-media{min-height:290px;display:grid;place-items:center}.podcast-media video{width:100%;border-radius:20px;max-height:360px;background:#151521}.audio-mode{width:100%;padding:30px 18px;text-align:center}.record{width:154px;height:154px;border-radius:50%;margin:0 auto 24px;background:radial-gradient(circle at 50% 50%,#fff 0 7%,#1c1b5e 8% 12%,#111 13% 19%,#2e2d71 20% 22%,#111 23% 100%);box-shadow:0 18px 30px rgba(23,22,90,.22);animation:spin 7s linear infinite;animation-play-state:paused}.audio-mode.playing .record{animation-play-state:running}@keyframes spin{to{transform:rotate(360deg)}}.audio-mode audio{width:100%}.podcast-empty{padding:36px;text-align:center;color:#6c6b7e;background:#f7f4ff;border:2px dashed #d9d4ff;border-radius:22px}.podcast-empty strong{display:block;color:var(--navy);font-size:18px;margin-bottom:8px}.podcast-copy{padding:30px;border-radius:32px;background:linear-gradient(135deg,var(--pink),var(--violet));color:#fff;box-shadow:0 17px 35px rgba(91,31,176,.24)}.podcast-copy .kicker{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.2);color:#fff}.podcast-copy h3{font-size:clamp(28px,3.2vw,44px);line-height:1.05;margin:20px 0 14px}.podcast-copy p{line-height:1.7;font-size:14px;color:rgba(255,255,255,.87)}.podcast-copy .tip{margin-top:20px;background:rgba(255,255,255,.12);padding:15px;border-radius:17px;font-size:12px;line-height:1.5}
 
-        .luz {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
-        }
+    .team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.member{position:relative;padding:25px 18px 22px;border-radius:30px;background:#fff;border:3px solid #fff;box-shadow:0 13px 30px rgba(23,22,90,.11);text-align:center;overflow:hidden}.member:before{content:"";position:absolute;left:0;right:0;top:0;height:9px;background:var(--red)}.member:nth-child(2):before{background:var(--cyan)}.member:nth-child(3):before{background:var(--green)}.member:nth-child(4):before{background:var(--violet)}.avatar{width:84px;height:84px;border-radius:50%;margin:5px auto 16px;display:grid;place-items:center;font-size:26px;font-weight:900;color:var(--navy);background:linear-gradient(135deg,#fff3d2,#f1efff);border:5px solid white;box-shadow:0 8px 18px rgba(23,22,90,.12)}.member h3{font-size:16px;color:var(--navy);margin-bottom:6px}.member p{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#858496;font-weight:800;margin:0}.team-footer{margin-top:16px;padding:20px;border-radius:26px;background:var(--navy);color:#fff;display:flex;justify-content:space-between;gap:18px;align-items:center;box-shadow:0 15px 30px rgba(23,22,90,.18)}.team-footer strong{font-size:20px}.team-footer span{font-size:12px;color:#d9d7ff}
 
-        .roja { background: #ff9cac; }
-        .amarilla { background: #ffe18c; }
-        .verde { background: #a7e8a5; }
-        
-        section {
-            min-height: 85vh;
-            padding: 90px 8%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+    .bottom-nav{position:fixed;z-index:55;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.86);backdrop-filter:blur(18px);padding:8px;border:2px solid white;border-radius:999px;box-shadow:0 12px 34px rgba(23,22,90,.16)}
+    .nav-arrow{width:44px;height:44px;border-radius:50%;background:#f2f0ff;color:var(--navy);font-weight:900;font-size:20px;transition:.2s}.nav-arrow:hover{background:var(--navy);color:#fff}.dots{display:flex;gap:6px}.dots button{width:9px;height:9px;border-radius:50%;background:#c7c3e6;padding:0;transition:.25s}.dots button.active{width:30px;border-radius:99px;background:var(--navy)}
+    .counter{min-width:48px;text-align:center;font-size:11px;font-weight:900;color:#6c6b7e}
 
-        .titulo-seccion {
-            text-align: center;
-            margin-bottom: 45px;
-        }
+    .toast{position:fixed;z-index:100;left:50%;bottom:90px;transform:translate(-50%,20px);background:#17172a;color:#fff;border-radius:15px;padding:12px 16px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;box-shadow:0 12px 28px rgba(0,0,0,.2)}.toast.show{opacity:1;transform:translate(-50%,0)}
 
-        .titulo-seccion h2 {
-            font-size: clamp(35px, 5vw, 55px);
-            margin-bottom: 12px;
-            background: linear-gradient(
-                90deg,
-                #ee91ad,
-                #eebd78,
-                #8dcf98,
-                #7ec5e7,
-                #ae94e5
-            );
-            -webkit-background-clip: text;
-            color: transparent;
-        }
+    .lightbox{position:fixed;z-index:120;inset:0;background:rgba(8,8,28,.86);display:none;align-items:center;justify-content:center;padding:30px;backdrop-filter:blur(10px)}.lightbox.open{display:flex}.lightbox img{max-width:92vw;max-height:82vh;object-fit:contain;border-radius:22px;box-shadow:0 30px 70px rgba(0,0,0,.4);transform:scale(1);transition:transform .15s ease}.lightbox-tools{position:absolute;bottom:30px;display:flex;gap:8px}.lightbox-tools button{background:white;color:var(--navy);border-radius:13px;padding:10px 13px;font-weight:900}.lightbox-close{position:absolute;right:24px;top:24px;width:46px;height:46px;border-radius:50%;background:white;color:#111;font-size:22px;font-weight:900}
 
-        .titulo-seccion p {
-            color: #777;
-            font-size: 17px;
-        }
-
-        .contenedor {
-            max-width: 1100px;
-            width: 100%;
-            margin: auto;
-        }
-
-        .tarjetas {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 25px;
-        }
-
-        .tarjeta {
-            background: rgba(255,255,255,0.78);
-            border-radius: 28px;
-            padding: 30px;
-            box-shadow: 0 12px 30px rgba(90,90,90,0.12);
-            border: 2px solid rgba(255,255,255,0.7);
-            transition: 0.35s;
-        }
-
-        .tarjeta:hover {
-            transform: translateY(-10px) rotate(0.5deg);
-            box-shadow: 0 18px 35px rgba(90,90,90,0.18);
-        }
-
-        .icono {
-            font-size: 45px;
-            margin-bottom: 15px;
-        }
-
-        .tarjeta h3 {
-            font-size: 23px;
-            margin-bottom: 12px;
-            color: #777;
-        }
-
-        .tarjeta p {
-            line-height: 1.7;
-            color: #666;
-        }
-
-        #circuito {
-            background: rgba(255,255,255,0.15);
-        }
-
-        .circuito-box {
-            background: rgba(255,255,255,0.82);
-            border-radius: 35px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(80,80,80,0.12);
-            text-align: center;
-        }
-
-        .circuito-box p {
-            font-size: 18px;
-            line-height: 1.8;
-            max-width: 850px;
-            margin: auto;
-        }
-
-        .leds {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin: 35px 0;
-            flex-wrap: wrap;
-        }
-
-        .led {
-            padding: 20px 30px;
-            border-radius: 25px;
-            font-weight: bold;
-            background: white;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        }
-        
-        .investigacion {
-            background: linear-gradient(
-                135deg,
-                rgba(255,220,235,0.5),
-                rgba(215,238,255,0.5)
-            );
-
-        .info-card {
-            text-align: center;
-            padding: 50px;
-            background: rgba(255,255,255,0.85);
-            border-radius: 35px;
-            box-shadow: 0 15px 35px rgba(80,80,80,0.12);
-        }
-
-        .info-card .emoji {
-            font-size: 75px;
-            margin-bottom: 20px;
-        }
-
-        .info-card p {
-            max-width: 750px;
-            margin: auto;
-            font-size: 18px;
-            line-height: 1.8;
-        }
-
-
-        .podcast {
-            background: linear-gradient(
-                135deg,
-                rgba(225,215,255,0.55),
-                rgba(255,215,235,0.55)
-            );
-        }
-
-        .podcast-box {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            border-radius: 35px;
-            padding: 45px;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(80,80,80,0.12);
-        }
-
-        .microfono {
-            font-size: 75px;
-            margin-bottom: 20px;
-        }
-
-        audio {
-            width: 100%;
-            margin-top: 25px;
-        }
-
-
-        .conclusion-box {
-            max-width: 900px;
-            margin: auto;
-            background: rgba(255,255,255,0.86);
-            border-radius: 40px;
-            padding: 50px;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(80,80,80,0.12);
-        }
-
-        .conclusion-box p {
-            font-size: 20px;
-            line-height: 1.9;
-        }
-
-        footer {
-            padding: 40px 20px;
-            text-align: center;
-            background: rgba(255,255,255,0.7);
-            color: #777;
-        }
-
-        footer .corazon {
-            font-size: 25px;
-        }
-
-
-        @media (max-width: 600px) {
-
-            nav a {
-                padding: 7px 10px;
-                font-size: 13px;
-            }
-
-            section {
-                padding: 70px 5%;
-            }
-
-            .circuito-box,
-            .podcast-box,
-            .conclusion-box,
-            .info-card {
-                padding: 28px 20px;
-            }
-
-            .subtitulo {
-                font-size: 17px;
-            }
-        }
-
-    </style>
+    @media (max-width: 940px){
+      .hero-card,.circuit-layout,.docs-layout,.infographic-layout,.podcast-wrap{grid-template-columns:1fr}.hero-card{min-height:auto}.hero-visual{min-height:330px}.logo-shell{min-height:260px}.grid-3{grid-template-columns:1fr}.team-grid{grid-template-columns:1fr 1fr}.section-head{align-items:flex-start;flex-direction:column}.section-head p{max-width:100%}.panel-scroll{max-height:calc(100vh - 190px)}.nav-pills{max-width:62vw}.brand-mini strong{display:none}
+    }
+    @media (max-width: 640px){
+      .topbar{top:10px;width:calc(100% - 20px);height:56px;padding-left:10px}.traffic-mini{display:none}.github-mini{width:38px;height:38px}.nav-pills button{font-size:11px;padding:9px 10px}.panel{padding:78px 10px 82px}.panel-scroll{max-height:calc(100vh - 166px);padding:4px 4px 25px}.hero-card{padding:24px;border-radius:28px;gap:20px}.hero-visual{min-height:260px}.logo-shell{min-height:220px;border-radius:30px}.orb{display:none}h1{font-size:47px}.section-head h2{font-size:38px}.team-grid{grid-template-columns:1fr}.req-grid{grid-template-columns:1fr}.team-footer{align-items:flex-start;flex-direction:column}.bottom-nav{bottom:10px}.dots{display:none}.counter{min-width:58px}.media-toolbar{gap:6px}.toolbtn{padding:8px 9px}.doc-slot{align-items:flex-start}.doc-icon{width:44px;height:52px}.podcast-copy{padding:24px}.infographic-frame{aspect-ratio:3/4}
+    }
+    @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+  </style>
 </head>
-
-
 <body>
+  <div class="noise"></div><div class="bg-splash s1"></div><div class="bg-splash s2"></div><div class="bg-splash s3"></div><div class="checker"></div>
 
-    <div class="estrella e1">✦</div>
-    <div class="estrella e2">✧</div>
-    <div class="estrella e3">✦</div>
-    <div class="estrella e4">✧</div>
-
-
-    <nav>
-
-        <a href="#inicio">Inicio</a>
-
-        <a href="#circuito">
-            🚦 Circuito
-        </a>
-
-        <a href="#investigacion">
-            📚 Investigación
-        </a>
-
-        <a href="#infografia">
-            📝 Infografía
-        </a>
-
-        <a href="#podcast">
-            🎙️ Podcast
-        </a>
-
-        <a href="#conclusion">
-            🌈 Conclusión
-        </a>
-
+  <header class="topbar" aria-label="Navegación principal">
+    <div class="brand-mini">
+      <span class="traffic-mini" aria-hidden="true"><i></i><i></i><i></i></span>
+      <strong>SEMÁFORO IRTRA PETAPA</strong>
+    </div>
+    <nav class="nav-pills" id="navPills">
+      <button class="active" data-go="0">Inicio</button>
+      <button data-go="1">Proyecto</button>
+      <button data-go="2">Circuito</button>
+      <button data-go="3">Investigación</button>
+      <button data-go="4">Infografía</button>
+      <button data-go="5">Podcast</button>
+      <button data-go="6">Equipo</button>
     </nav>
+    <a class="github-mini" href="https://github.com/emily2702/Proyecto-Final-Sem-foro" target="_blank" rel="noopener" aria-label="Visitar repositorio en GitHub" title="GitHub">
+      <!-- Vector basado en el GitHub Mark / Invertocat -->
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5C5.73.5.68 5.55.68 11.82c0 5.01 3.44 9.26 8.2 10.76.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.38-1.34-1.75-1.34-1.75-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.08 1.84 2.82 1.31 3.51 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.28 0 .32.21.69.82.57 4.76-1.5 8.2-5.75 8.2-10.76C23.32 5.55 18.27.5 12 .5z"/></svg>
+    </a>
+  </header>
 
-
-    <header id="inicio">
-
-        <div class="mini-texto">
-            PROYECTO DE TECNOLOGÍA 
-        </div>
-
-        <h1>
-            Semáforo<br>
-            Irtra Petapa
-        </h1>
-
-        <p class="subtitulo">
-            Semáforo contador de personas
-        </p>
-
-        <div class="semaforo">
-
-            <div class="luz roja"></div>
-
-            <div class="luz amarilla"></div>
-
-            <div class="luz verde"></div>
-
-        </div>
-
-
-        <a href="#circuito" class="boton">
-             Conoce el proyecto
-        </a>
-
-    </header>
-
-
-    <section id="circuito">
-
-        <div class="contenedor">
-
-            <div class="titulo-seccion">
-
-                <h2>
-                    🚦 Circuito Tinkercad
-                </h2>
-
-                <p>
-                Nuestro circuito de Tinkercad
-                </p>
-
+  <main class="viewport" id="viewport">
+    <section class="panel active" data-title="Inicio" aria-hidden="false">
+      <div class="panel-scroll">
+        <div class="hero-card sticker-card">
+          <div class="hero-copy">
+            <span class="kicker"><span class="dot"></span> Proyecto Final de TICS · Grupo 9</span>
+            <h1><span class="rainbow-title"><span>S</span><span>E</span><span>M</span><span>Á</span><span>F</span><span>O</span><span>R</span>O</span><br>IRTRA PETAPA</h1>
+            <p class="lead">Una propuesta tecnológica para apoyar el orden y la seguridad en filas de acceso mediante un sistema de semáforo y conteo de personas, desarrollado con electrónica, programación y diseño digital.</p>
+            <div class="meta-row"><span class="chip">Undécimo grado</span><span class="chip">Sección E</span><span class="chip">Grupo 9</span><span class="chip">Tinkercad + Arduino</span></div>
+            <div class="cta-row">
+              <button class="btn btn-primary" data-go="1">CONOCE EL PROYECTO</button>
+              <a class="btn btn-dark" href="https://github.com/emily2702/Proyecto-Final-Sem-foro" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5C5.73.5.68 5.55.68 11.82c0 5.01 3.44 9.26 8.2 10.76.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.38-1.34-1.75-1.34-1.75-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.08 1.84 2.82 1.31 3.51 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.28 0 .32.21.69.82.57 4.76-1.5 8.2-5.75 8.2-10.76C23.32 5.55 18.27.5 12 .5z"/></svg>
+                VISITA NUESTRO GITHUB
+              </a>
             </div>
-
-
-            <div class="circuito-box">
-
-
-                <div class="leds">
-
-                    <div class="led">
-                        🔴 Alto
-                    </div>
-
-                    <div class="led">
-                        🟡 Precaución
-                    </div>
-
-                    <div class="led">
-                        🟢 Acceso
-                    </div>
-
-                </div>
-
+          </div>
+          <div class="hero-visual">
+            <span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span>
+            <div class="logo-shell">
+              <img id="mainLogo" alt="Logo Semáforo IRTRA Petapa" />
+              <div class="logo-fallback" id="logoFallback">Semáforo<br>IRTRA Petapa<small>Orden hoy, sonrisas mañana</small></div>
             </div>
-
+          </div>
         </div>
-
+      </div>
     </section>
 
-
-
-    <section
-        id="investigacion"
-        class="investigacion"
-    >
-
-        <div class="contenedor">
-
-            <div class="titulo-seccion">
-
-                <h2>
-                    📚 Investigación Formal
-                </h2>
-
-            </div>
-
-
-            <div class="tarjetas">
-
-
-                <div class="tarjeta">
-
-                    <div class="icono">
-                        💡
-                    </div>
-
-                    <h3>
-                        Planteamiento
-                    </h3>
-
-                </div>
-
-
-                <div class="tarjeta">
-
-                    <div class="icono">
-                        🔎
-                    </div>
-
-                    <h3>
-                        Objetivo
-                    </h3>
-
-                    <p>
-                        Diseñar una alternativa tecnológica que
-                        permita visualizar de manera sencilla
-                        la cantidad de personas dentro de un área.
-                    </p>
-
-                </div>
-
-
-                <div class="tarjeta">
-
-                    <div class="icono">
-                        ⚙️
-                    </div>
-
-                    <h3>
-                        Tecnología
-                    </h3>
-
-                    <p>
-                        El proyecto integra programación,
-                        electrónica y sensores para crear
-                        un sistema funcional.
-                    </p>
-
-                </div>
-
-
-                <div class="tarjeta">
-
-                    <div class="icono">
-                        🌎
-                    </div>
-
-                    <h3>
-                        Importancia
-                    </h3>
-
-                    <p>
-                        La tecnología puede utilizarse para
-                        mejorar la organización, seguridad y
-                        experiencia de las personas.
-                    </p>
-
-                </div>
-
-            </div>
-
+    <section class="panel" data-title="Proyecto" aria-hidden="true">
+      <div class="panel-scroll">
+        <div class="section-head"><div><div class="eyebrow">La idea central</div><h2>¿QUÉ RESUELVE?</h2></div><p>La propuesta parte de una problemática operativa del parque y la traduce en una solución electrónica autónoma documentada para IRTRA Petapa.</p></div>
+        <div class="grid-3">
+          <article class="info-tile"><div class="num">01</div><h3>Problema</h3><p>Las filas y zonas de acceso pueden necesitar una señal clara para organizar el flujo de personas y reducir confusiones durante el ingreso.</p></article>
+          <article class="info-tile"><div class="num">02</div><h3>Solución</h3><p>Un semáforo contador comunica visualmente el estado de acceso y combina programación, sensores y señalización para facilitar la toma de decisiones.</p></article>
+          <article class="info-tile"><div class="num">03</div><h3>Impacto</h3><p>El proyecto conecta automatización con organización, seguridad y experiencia del visitante. La relación con los ODS queda desarrollada en la investigación formal.</p></article>
         </div>
-
+        <div class="ribbon">ORDEN HOY, SONRISAS MAÑANA. ¡HAZ TU FILA SEGURA!</div>
+      </div>
     </section>
 
-
-
-    <!-- =========================
-         INFOGRAFÍA
-    ========================= -->
-
-    <section id="infografia">
-
-        <div class="contenedor">
-
-            <div class="titulo-seccion">
-
-                <h2>
-                    📝 Infografía
-                </h2>
-
-                <p>
-                    Información resumida de nuestro proyecto
-                </p>
-
+    <section class="panel" data-title="Circuito" aria-hidden="true">
+      <div class="panel-scroll">
+        <div class="section-head"><div><div class="eyebrow">Prototipo electrónico</div><h2>CIRCUITO Y PRUEBAS</h2></div><p>Visualiza la simulación en Tinkercad y la implementación física. La imagen incluye controles de zoom y filtros para revisar mejor los detalles.</p></div>
+        <div class="circuit-layout">
+          <div class="media-card">
+            <div class="tabs"><button class="tab active" data-circuit="virtual">Tinkercad / Virtual</button><button class="tab" data-circuit="physical">Circuito físico</button></div>
+            <div id="virtualCircuit" class="circuit-pane">
+              <div class="media-frame"><img id="circuitImage" alt="Captura del circuito virtual en Tinkercad"><div class="media-empty" id="circuitImageEmpty"><div><strong>Captura del circuito virtual</strong><small>Se cargará automáticamente desde “FOTO DEL CIRCUITO VIRTUAL TICS”.</small></div></div></div>
+              <div class="media-toolbar">
+                <button class="toolbtn" data-zoom="circuitImage" data-delta=".15">Zoom +</button><button class="toolbtn" data-zoom="circuitImage" data-delta="-.15">Zoom −</button><button class="toolbtn" data-reset="circuitImage">Restablecer</button><button class="toolbtn" data-filter="circuitImage" data-value="saturate(1.35) contrast(1.08)">Vivo</button><button class="toolbtn" data-filter="circuitImage" data-value="grayscale(1)">B/N</button><button class="toolbtn" data-lightbox="circuitImage">Pantalla completa</button>
+              </div>
+              <div class="media-frame" style="margin-top:14px"><video id="virtualVideo" controls playsinline preload="metadata"></video><div class="media-empty" id="virtualVideoEmpty"><div><strong>Video de la simulación</strong><small>Se cargará desde “VIDEO DEL CIRCUITO EN VIRTUAL TICS”.</small></div></div></div>
             </div>
-
-
-            <div class="info-card">
-
-                <div class="emoji">
-                    🌈
-                </div>
-
-                <p>
-                    En esta sección se presentará la infografía
-                    realizada por nuestro equipo, donde se
-                    explicarán de manera visual los principales
-                    elementos, funcionamiento y características
-                    del <strong>Semáforo Irtra Petapa</strong>.
-                </p>
-
-
-                <!-- AQUÍ PUEDEN AGREGAR SU IMAGEN -->
-
-                <div
-                    style="
-                    margin-top:30px;
-                    padding:35px;
-                    border-radius:25px;
-                    background:linear-gradient(
-                        120deg,
-                        #ffd9e7,
-                        #fff0c9,
-                        #dcf7d9,
-                        #d4edff,
-                        #e4d8ff
-                    );
-                    "
-                >
-
-                    <strong>
-                        ✨ ESPACIO PARA LA INFOGRAFÍA ✨
-                    </strong>
-
-                    <p style="margin-top:10px;">
-                        Pueden colocar aquí la imagen
-                        de su infografía.
-                    </p>
-
-                </div>
-
+            <div id="physicalCircuit" class="circuit-pane" hidden>
+              <div class="media-frame"><video id="physicalVideo" controls playsinline preload="metadata"></video><div class="media-empty" id="physicalVideoEmpty"><div><strong>Video del circuito físico</strong><small>Se cargará desde “VIDEO DEL CIRCUITO EN FISICO TICS”.</small></div></div></div>
+              <div class="media-toolbar"><a class="toolbtn" href="https://github.com/emily2702/Proyecto-Final-Sem-foro" target="_blank" rel="noopener">Ver archivos en GitHub</a></div>
             </div>
-
+          </div>
+          <aside class="circuit-aside">
+            <div class="status-card"><h3>Base técnica del proyecto</h3><div class="bulletline"><span class="b-dot"></span><span>Microcontrolador Arduino Uno R3 en protoboard.</span></div><div class="bulletline"><span class="b-dot"></span><span>Simulación y programación trabajadas en Tinkercad Circuits.</span></div><div class="bulletline"><span class="b-dot"></span><span>Código del circuito planteado en C++ según la guía del proyecto.</span></div><div class="bulletline"><span class="b-dot"></span><span>La evidencia visual reúne captura virtual, video virtual y video físico.</span></div></div>
+            <div class="status-card"><h3>Accesos rápidos</h3><div class="cta-row"><a class="btn btn-soft" href="https://www.tinkercad.com/" target="_blank" rel="noopener">Abrir Tinkercad</a><button class="btn btn-primary" data-go="3">Ver investigación</button></div></div>
+          </aside>
         </div>
-
+      </div>
     </section>
 
-
-
-    <!-- =========================
-         PODCAST
-    ========================= -->
-
-    <section
-        id="podcast"
-        class="podcast"
-    >
-
-        <div class="contenedor">
-
-            <div class="titulo-seccion">
-
-                <h2>
-                    🎙️ Podcast
-                </h2>
-
-                <p>
-                    Escucha nuestro proyecto desde otra perspectiva
-                </p>
-
-            </div>
-
-
-            <div class="podcast-box">
-
-                <div class="microfono">
-                    🎙️
-                </div>
-
-                <h3 style="
-                    font-size:28px;
-                    color:#888;
-                    margin-bottom:15px;
-                ">
-                    Nuestro Podcast
-                </h3>
-
-                <p style="
-                    line-height:1.8;
-                    font-size:17px;
-                ">
-                    En este espacio compartiremos un podcast
-                    donde hablaremos sobre el proyecto, su
-                    funcionamiento, el proceso de creación y
-                    lo que aprendimos durante su desarrollo.
-                </p>
-
-
-                <!--
-
-                CUANDO TENGAN EL AUDIO:
-
-                1. Suban el archivo MP3 a GitHub.
-                2. Cambien "podcast.mp3" por el nombre del archivo.
-
-                -->
-
-                <audio controls>
-
-                    <source
-                        src="podcast.mp3"
-                        type="audio/mpeg"
-                    >
-
-                    Tu navegador no puede reproducir este audio.
-
-                </audio>
-
-            </div>
-
+    <section class="panel" data-title="Investigación" aria-hidden="true">
+      <div class="panel-scroll">
+        <div class="section-head"><div><div class="eyebrow">Documento formal</div><h2>INVESTIGACIÓN</h2></div><p>Sección preparada para el informe en PDF y Word. El espacio de Word queda intencionalmente listo para que lo agregues después.</p></div>
+        <div class="docs-layout">
+          <div class="doc-slots">
+            <article class="doc-slot"><div class="doc-icon">PDF</div><div><h3>Investigación formal · PDF</h3><p>Coloca el PDF final en el repositorio y escribe su nombre en la configuración del archivo.</p><div class="doc-actions"><a id="researchPdfBtn" class="mini-action pending" aria-disabled="true">PDF pendiente</a></div></div></article>
+            <article class="doc-slot"><div class="doc-icon">DOCX</div><div><h3>Investigación formal · Word</h3><p>Espacio reservado para el .docx solicitado por la guía. No se ha inventado un nombre de archivo para evitar enlaces rotos.</p><div class="doc-actions"><a id="researchWordBtn" class="mini-action pending" aria-disabled="true">WORD · AÑADIR DESPUÉS</a></div></div></article>
+            <article class="doc-slot"><div class="doc-icon">GIT</div><div><h3>Repositorio del proyecto</h3><p>Los recursos y evidencias del proyecto quedan centralizados en GitHub.</p><div class="doc-actions"><a class="mini-action" href="https://github.com/emily2702/Proyecto-Final-Sem-foro" target="_blank" rel="noopener">Abrir repositorio</a><a class="mini-action" href="README.md" target="_blank">Ver README.md</a></div></div></article>
+          </div>
+          <div class="requirements"><h3>Checklist del documento</h3><div class="req-grid"><div class="req"><strong>Hojas colchón</strong>Separación entre secciones principales.</div><div class="req"><strong>Secciones reales</strong>Usar saltos de sección, no solo saltos de página.</div><div class="req"><strong>Página horizontal</strong>Al menos una para tabla, diagrama o esquema.</div><div class="req"><strong>Encabezado + pie</strong>Configurados por sección y con numeración.</div><div class="req"><strong>Estructura temática</strong>5 temas y 20 subtemas para cubrir el resumen final (el cuerpo de la guía menciona 18).</div><div class="req"><strong>Citas APA</strong>Citas parentéticas y referencias nativas de Word.</div></div></div>
         </div>
-
+      </div>
     </section>
 
-
-
-    <!-- =========================
-         CONCLUSIÓN
-    ========================= -->
-
-    <section id="conclusion">
-
-        <div class="contenedor">
-
-            <div class="titulo-seccion">
-
-                <h2>
-                    🌈 Nuestra Conclusión
-                </h2>
-
-                <p>
-                    Lo que aprendimos durante este proyecto
-                </p>
-
-            </div>
-
-
-            <div class="conclusion-box">
-
-                <p>
-
-                    La realización del proyecto
-                    <strong>Semáforo Irtra Petapa</strong>
-                    nos permitió comprender cómo la tecnología,
-                    la programación y la electrónica pueden
-                    combinarse para crear soluciones a
-                    situaciones de la vida cotidiana.
-
-                    <br><br>
-
-                    Durante el proceso aprendimos a trabajar
-                    en equipo, investigar, diseñar un circuito,
-                    plantear una solución tecnológica y
-                    comunicar nuestras ideas mediante diferentes
-                    herramientas digitales.
-
-                    <br><br>
-
-                    Más que construir un circuito, este proyecto
-                    nos permitió descubrir que una idea puede
-                    convertirse en una propuesta tecnológica
-                    cuando existe creatividad, organización y
-                    trabajo en equipo.
-
-                    <br><br>
-
-                    ✨ <strong>
-                    La tecnología comienza con una idea.
-                    </strong>
-
-                </p>
-
-            </div>
-
+    <section class="panel" data-title="Infografía" aria-hidden="true">
+      <div class="panel-scroll">
+        <div class="section-head"><div><div class="eyebrow">Resumen ejecutivo visual</div><h2>INFOGRAFÍA</h2></div><p>La infografía puede verse directamente como imagen y también abrirse como PDF desde el repositorio.</p></div>
+        <div class="infographic-layout">
+          <div class="infographic-card">
+            <div class="infographic-frame"><img id="infographicImage" src="INFOGRAFIA TICS IMAGEN.png" alt="Infografía del proyecto Semáforo IRTRA Petapa" onerror="this.style.display='none';document.getElementById('infographicEmpty').style.display='grid'"><div class="media-empty" id="infographicEmpty" style="display:none"><div><strong>Infografía visual</strong><small>Falta “INFOGRAFIA TICS IMAGEN.png” en esta copia local, pero el enlace ya apunta al archivo del repositorio.</small></div></div></div>
+            <div class="media-toolbar"><button class="toolbtn" data-zoom="infographicImage" data-delta=".15">Zoom +</button><button class="toolbtn" data-zoom="infographicImage" data-delta="-.15">Zoom −</button><button class="toolbtn" data-reset="infographicImage">Restablecer</button><button class="toolbtn" data-filter="infographicImage" data-value="saturate(1.4) contrast(1.06)">Vivo</button><button class="toolbtn" data-filter="infographicImage" data-value="grayscale(1)">B/N</button><button class="toolbtn" data-lightbox="infographicImage">Pantalla completa</button></div>
+          </div>
+          <div class="info-actions">
+            <a class="big-link" href="INFOGRAFIA TICS IMAGEN.png" target="_blank"><div><strong>Abrir imagen completa</strong><small>PNG de la infografía para visualizar o presentar.</small></div><span class="link-badge">PNG</span></a>
+            <a class="big-link" href="INFOGRAFÍA PROYECTO FINAL DE TICS (PDF).pdf" target="_blank"><div><strong>Abrir versión PDF</strong><small>Documento PDF de la infografía almacenado en GitHub.</small></div><span class="link-badge">PDF</span></a>
+            <a class="big-link" href="https://github.com/emily2702/Proyecto-Final-Sem-foro" target="_blank" rel="noopener"><div><strong>Consultar archivos fuente</strong><small>Acceso directo al repositorio oficial del equipo.</small></div><span class="link-badge">GIT</span></a>
+          </div>
         </div>
-
+      </div>
     </section>
 
-
-
-    <!-- =========================
-         FOOTER
-    ========================= -->
-
-    <footer>
-
-        <div class="corazon">
-            🌸 ✦ 🌈 ✦ 🌸
+    <section class="panel" data-title="Podcast" aria-hidden="true">
+      <div class="panel-scroll">
+        <div class="section-head"><div><div class="eyebrow">Multimedia</div><h2>PODCAST</h2></div><p>El reproductor permite ver el video original o escuchar únicamente su pista de audio, sin duplicar el archivo.</p></div>
+        <div class="podcast-wrap">
+          <div class="podcast-player">
+            <div class="player-switch"><button class="active" data-podcast-mode="video">Ver video</button><button data-podcast-mode="audio">Solo audio</button></div>
+            <div class="podcast-media">
+              <video id="podcastVideo" controls playsinline preload="metadata" hidden></video>
+              <div class="audio-mode" id="audioMode" hidden><div class="record"></div><audio id="podcastAudio" controls preload="metadata"></audio></div>
+              <div class="podcast-empty" id="podcastEmpty"><strong>Podcast listo para conectar</strong>El sitio buscará automáticamente varios nombres comunes de archivo. Si el video del podcast tiene otro nombre, solo cambia una línea en la sección CONFIGURACIÓN del código.</div>
+            </div>
+          </div>
+          <div class="podcast-copy"><span class="kicker">PODCAST INFORMATIVO</span><h3>La historia detrás del circuito</h3><p>Este espacio está pensado para explicar el proyecto, su lógica, el proceso de creación y su impacto en IRTRA Petapa. El modo “Solo audio” reutiliza la misma pista del video para que pueda escucharse como un podcast tradicional.</p><div class="tip">Duración máxima indicada en la guía: 5 minutos. Puedes mantener el video en el repositorio y ofrecer las dos formas de reproducción desde esta misma página.</div></div>
         </div>
+      </div>
+    </section>
 
-        <br>
+    <section class="panel" data-title="Equipo" aria-hidden="true">
+      <div class="panel-scroll">
+        <div class="section-head"><div><div class="eyebrow">Grupo 9 · Undécimo E</div><h2>NUESTRO EQUIPO</h2></div><p>Proyecto Final de TICS desarrollado por cuatro integrantes. Los espacios visuales pueden sustituirse después por avatares creados con IA si desean integrarlos en la landing.</p></div>
+        <div class="team-grid">
+          <article class="member"><div class="avatar">EM</div><h3>Evangeline Morejón</h3><p>Integrante · Grupo 9</p></article>
+          <article class="member"><div class="avatar">TS</div><h3>Teresa Sandoval</h3><p>Integrante · Grupo 9</p></article>
+          <article class="member"><div class="avatar">ER</div><h3>Emily Rivera</h3><p>Integrante · Grupo 9</p></article>
+          <article class="member"><div class="avatar">IG</div><h3>Iliana Grijalva</h3><p>Integrante · Grupo 9</p></article>
+        </div>
+        <div class="team-footer"><div><strong>Proyecto Final de TICS</strong><br><span>Undécimo grado · Sección E · Grupo 9</span></div><div class="cta-row"><a class="btn btn-dark" href="https://github.com/emily2702/Proyecto-Final-Sem-foro" target="_blank" rel="noopener">Repositorio GitHub</a><button class="btn btn-primary" data-go="0">Volver al inicio</button></div></div>
+      </div>
+    </section>
+  </main>
 
-        <p>
-            Proyecto de Tecnología · Semáforo Irtra Petapa
-        </p>
+  <div class="bottom-nav" aria-label="Controles de sección"><button class="nav-arrow" id="prevBtn" aria-label="Sección anterior">‹</button><div class="dots" id="dots"></div><div class="counter" id="counter">01 / 07</div><button class="nav-arrow" id="nextBtn" aria-label="Sección siguiente">›</button></div>
+  <div class="toast" id="toast"></div>
 
-        <p style="margin-top:8px;">
-            Hecho con creatividad, tecnología y trabajo en equipo ♡
-        </p>
+  <div class="lightbox" id="lightbox" aria-modal="true" role="dialog"><button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">×</button><img id="lightboxImage" alt="Vista ampliada"><div class="lightbox-tools"><button id="lbMinus">Zoom −</button><button id="lbReset">Restablecer</button><button id="lbPlus">Zoom +</button></div></div>
 
-    </footer>
+  <script>
+    /* ==========================================================
+       CONFIGURACIÓN DE ARCHIVOS
+       ==========================================================
+       Los cuatro archivos sin extensión ya existen en tu repo.
+       El cargador los convierte en Blob con el MIME correcto para
+       que funcionen mejor en GitHub Pages.
 
+       Para la investigación formal, escribe aquí los nombres reales
+       cuando subas el PDF y el Word.
 
+       Para el podcast, la página probará varios nombres. Si ninguno
+       coincide, agrega el nombre exacto a podcastCandidates.
+    */
+    const FILES = {
+      logo: { path: 'LOGO PRINCIPAL', type: 'image/png' },
+      circuitImage: { path: 'FOTO DEL CIRCUITO VIRTUAL TICS', type: 'image/jpeg' },
+      virtualVideo: { path: 'VIDEO DEL CIRCUITO EN VIRTUAL TICS', type: 'video/mp4' },
+      physicalVideo: { path: 'VIDEO DEL CIRCUITO EN FISICO TICS', type: 'video/mp4' },
+      researchPdf: '',
+      researchWord: '',
+      podcastCandidates: ['PODCAST TICS.mp4','PODCAST DEL PROYECTO TICS.mp4','PODCAST VIDEO TICS.mp4','PODCAST TICS']
+    };
+
+    const panels = [...document.querySelectorAll('.panel')];
+    const navBtns = [...document.querySelectorAll('[data-go]')];
+    const pillBtns = [...document.querySelectorAll('.nav-pills [data-go]')];
+    const dotsBox = document.getElementById('dots');
+    const counter = document.getElementById('counter');
+    let current = 0;
+
+    panels.forEach((_,i)=>{const b=document.createElement('button');b.setAttribute('aria-label','Ir a sección '+(i+1));b.addEventListener('click',()=>go(i));dotsBox.appendChild(b)});
+    const dotBtns=[...dotsBox.children];
+
+    function go(i){
+      i=(i+panels.length)%panels.length;
+      if(i===current) return;
+      const direction=i>current?1:-1;
+      panels[current].classList.remove('active');
+      panels[current].classList.add(direction>0?'exit-left':'exit-right');
+      panels[current].setAttribute('aria-hidden','true');
+      const old=current; current=i;
+      panels[current].classList.remove('exit-left','exit-right');
+      panels[current].style.transform=`translate3d(${direction>0?45:-45}px,0,0) scale(.985)`;
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{panels[current].style.transform='';panels[current].classList.add('active');panels[current].setAttribute('aria-hidden','false')}));
+      setTimeout(()=>panels[old].classList.remove('exit-left','exit-right'),600);
+      syncNav();
+    }
+    function syncNav(){
+      pillBtns.forEach((b,i)=>b.classList.toggle('active',i===current));
+      dotBtns.forEach((b,i)=>b.classList.toggle('active',i===current));
+      counter.textContent=String(current+1).padStart(2,'0')+' / '+String(panels.length).padStart(2,'0');
+      document.title=panels[current].dataset.title+' | Semáforo IRTRA Petapa';
+    }
+    navBtns.forEach(b=>b.addEventListener('click',()=>go(Number(b.dataset.go))));
+    document.getElementById('prevBtn').addEventListener('click',()=>go(current-1));
+    document.getElementById('nextBtn').addEventListener('click',()=>go(current+1));
+    document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='PageDown')go(current+1);if(e.key==='ArrowLeft'||e.key==='PageUp')go(current-1);if(e.key==='Escape')closeLightbox()});
+    let touchX=null; document.addEventListener('touchstart',e=>touchX=e.touches[0].clientX,{passive:true});document.addEventListener('touchend',e=>{if(touchX===null)return;const dx=e.changedTouches[0].clientX-touchX;if(Math.abs(dx)>70)go(current+(dx<0?1:-1));touchX=null},{passive:true});
+    syncNav();
+
+    function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('show'),2300)}
+
+    async function attachBlobAsset(el, emptyEl, file){
+      if(!el || !file?.path) return false;
+      try{
+        if(location.protocol==='file:'){
+          el.src=file.path; el.hidden=false;
+          el.addEventListener('loadeddata',()=>emptyEl&&(emptyEl.style.display='none'),{once:true});
+          el.addEventListener('load',()=>emptyEl&&(emptyEl.style.display='none'),{once:true});
+          return true;
+        }
+        const res=await fetch(encodeURI(file.path),{cache:'no-store'});
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        const raw=await res.blob();
+        const blob=new Blob([raw],{type:file.type});
+        el.src=URL.createObjectURL(blob); el.hidden=false;
+        if(emptyEl) emptyEl.style.display='none';
+        return true;
+      }catch(err){
+        if(emptyEl) emptyEl.style.display='grid';
+        console.warn('No se pudo cargar',file.path,err); return false;
+      }
+    }
+
+    attachBlobAsset(document.getElementById('mainLogo'),null,FILES.logo).then(ok=>{
+      if(!ok){document.getElementById('mainLogo').style.display='none';document.getElementById('logoFallback').style.display='block'}
+    });
+    attachBlobAsset(document.getElementById('circuitImage'),document.getElementById('circuitImageEmpty'),FILES.circuitImage);
+    attachBlobAsset(document.getElementById('virtualVideo'),document.getElementById('virtualVideoEmpty'),FILES.virtualVideo);
+    attachBlobAsset(document.getElementById('physicalVideo'),document.getElementById('physicalVideoEmpty'),FILES.physicalVideo);
+
+    document.querySelectorAll('[data-circuit]').forEach(b=>b.addEventListener('click',()=>{
+      document.querySelectorAll('[data-circuit]').forEach(x=>x.classList.toggle('active',x===b));
+      document.getElementById('virtualCircuit').hidden=b.dataset.circuit!=='virtual';
+      document.getElementById('physicalCircuit').hidden=b.dataset.circuit!=='physical';
+      document.querySelectorAll('#virtualCircuit video,#physicalCircuit video').forEach(v=>v.pause());
+    }));
+
+    const transforms=new Map();
+    function applyVisual(id){const el=document.getElementById(id);if(!el)return;const state=transforms.get(id)||{scale:1,filter:'none'};el.style.transform=`scale(${state.scale})`;el.style.filter=state.filter}
+    document.querySelectorAll('[data-zoom]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.zoom;const s=transforms.get(id)||{scale:1,filter:'none'};s.scale=Math.min(2.6,Math.max(.6,s.scale+Number(b.dataset.delta)));transforms.set(id,s);applyVisual(id)}));
+    document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.filter;const s=transforms.get(id)||{scale:1,filter:'none'};s.filter=(s.filter===b.dataset.value?'none':b.dataset.value);transforms.set(id,s);applyVisual(id);document.querySelectorAll(`[data-filter="${id}"]`).forEach(x=>x.classList.toggle('active',s.filter===x.dataset.value))}));
+    document.querySelectorAll('[data-reset]').forEach(b=>b.addEventListener('click',()=>{transforms.set(b.dataset.reset,{scale:1,filter:'none'});applyVisual(b.dataset.reset);document.querySelectorAll(`[data-filter="${b.dataset.reset}"]`).forEach(x=>x.classList.remove('active'))}));
+
+    const lb=document.getElementById('lightbox'),lbImg=document.getElementById('lightboxImage');let lbScale=1;
+    function openLightbox(id){const src=document.getElementById(id)?.src;if(!src){toast('La imagen todavía no está disponible.');return}lbImg.src=src;lbScale=1;lbImg.style.transform='scale(1)';lb.classList.add('open')}
+    function closeLightbox(){lb.classList.remove('open')}
+    document.querySelectorAll('[data-lightbox]').forEach(b=>b.addEventListener('click',()=>openLightbox(b.dataset.lightbox)));
+    document.getElementById('lightboxClose').addEventListener('click',closeLightbox);lb.addEventListener('click',e=>{if(e.target===lb)closeLightbox()});
+    document.getElementById('lbPlus').addEventListener('click',()=>{lbScale=Math.min(3,lbScale+.2);lbImg.style.transform=`scale(${lbScale})`});document.getElementById('lbMinus').addEventListener('click',()=>{lbScale=Math.max(.5,lbScale-.2);lbImg.style.transform=`scale(${lbScale})`});document.getElementById('lbReset').addEventListener('click',()=>{lbScale=1;lbImg.style.transform='scale(1)'});
+
+    function wireDoc(btnId,path,label){const b=document.getElementById(btnId);if(path){b.href=path;b.target='_blank';b.textContent=label;b.classList.remove('pending');b.removeAttribute('aria-disabled')}else{b.addEventListener('click',e=>{e.preventDefault();toast('Este archivo aún no fue agregado al repositorio.')})}}
+    wireDoc('researchPdfBtn',FILES.researchPdf,'Abrir PDF'); wireDoc('researchWordBtn',FILES.researchWord,'Abrir Word');
+
+    const pVideo=document.getElementById('podcastVideo'),pAudio=document.getElementById('podcastAudio'),pEmpty=document.getElementById('podcastEmpty'),audioMode=document.getElementById('audioMode');
+    let podcastUrl='';
+    async function locatePodcast(){
+      if(location.protocol==='file:') return false;
+      for(const path of FILES.podcastCandidates){
+        try{const r=await fetch(encodeURI(path),{cache:'no-store'});if(!r.ok)continue;const raw=await r.blob();const blob=new Blob([raw],{type:'video/mp4'});podcastUrl=URL.createObjectURL(blob);pVideo.src=podcastUrl;pAudio.src=podcastUrl;pVideo.hidden=false;pEmpty.hidden=true;return true}catch(_){}
+      }
+      return false;
+    }
+    locatePodcast();
+    document.querySelectorAll('[data-podcast-mode]').forEach(b=>b.addEventListener('click',()=>{
+      document.querySelectorAll('[data-podcast-mode]').forEach(x=>x.classList.toggle('active',x===b));
+      if(!podcastUrl){toast('Agrega el video del podcast y su nombre a CONFIGURACIÓN.');return}
+      const mode=b.dataset.podcastMode;
+      if(mode==='video'){pAudio.pause();audioMode.hidden=true;pVideo.hidden=false}else{pVideo.pause();pVideo.hidden=true;audioMode.hidden=false}
+    }));
+    pAudio.addEventListener('play',()=>audioMode.classList.add('playing'));pAudio.addEventListener('pause',()=>audioMode.classList.remove('playing'));
+  </script>
 </body>
 </html>
-```
