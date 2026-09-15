@@ -290,7 +290,7 @@
     <section class="panel" data-title="Investigación" aria-hidden="true">
       <div class="sheet">
         <div class="section-head"><div class="eyebrow">Documento formal</div><h2>INVESTIGACIÓN</h2><p>Consulta directa de la investigación final en sus dos formatos de entrega: PDF y Microsoft Word.</p></div><div class="rainbow-line"></div>
-        <div class="doc-view"><h3>Investigación formal · PDF</h3><p class="doc-desc">Versión final del documento de investigación del proyecto.</p><div class="pdf-inline-viewer" id="researchPdf" aria-label="Investigación formal en PDF"><div class="pdf-loading">CARGANDO INVESTIGACIÓN EN PDF…</div></div><div class="doc-link-row"><a class="doc-link" href="PDF proyecto final TICS (1).pdf" target="_blank" rel="noopener">ABRIR PDF COMPLETO</a></div></div>
+        <div class="doc-view"><h3>Investigación formal · PDF</h3><p class="doc-desc">Versión final del documento de investigación del proyecto.</p><iframe class="pdf-view" id="researchPdf" title="Investigación formal en PDF" src="https://raw.githubusercontent.com/emily2702/Proyecto-Final-Sem-foro/main/PDF%20proyecto%20final%20TICS%20%281%29.pdf#toolbar=1&navpanes=1&scrollbar=1&view=FitH"></iframe><div class="doc-link-row"><a class="doc-link" href="https://raw.githubusercontent.com/emily2702/Proyecto-Final-Sem-foro/main/PDF%20proyecto%20final%20TICS%20%281%29.pdf" target="_blank" rel="noopener">ABRIR PDF COMPLETO</a></div></div>
         <div class="doc-view"><h3>Investigación formal · Word</h3><p class="doc-desc">Versión editable en Microsoft Word del mismo documento de investigación.</p><iframe class="embed-frame" id="wordViewer" title="Investigación formal en Word"></iframe><div class="viewer-note">Si el visor de Microsoft Office tarda en cargar o no está disponible en el navegador, el documento puede abrirse directamente desde el botón inferior.</div><div class="doc-link-row"><a class="doc-link" id="wordDirectLink" href="Word proyecto final TICSS.docx" target="_blank" rel="noopener">ABRIR DOCUMENTO WORD</a></div></div>
       </div>
     </section>
@@ -298,7 +298,7 @@
     <section class="panel" data-title="Infografía" aria-hidden="true">
       <div class="sheet">
         <div class="section-head"><div class="eyebrow">Resumen ejecutivo visual</div><h2>INFOGRAFÍA</h2><p>La infografía se presenta completa dentro de la página, respetando su proporción original y sin recortes.</p></div><div class="rainbow-line"></div>
-        <div class="infographic-wrap"><h3>Infografía del proyecto</h3><p>Resumen visual de la solución, integrantes, materiales, evidencia y propósito del sistema.</p><img class="infographic-image" src="INFOGRAFIA TICS IMAGEN.png" alt="Infografía completa del proyecto Semáforo IRTRA Petapa" /><div class="pdf-label">Versión PDF de la infografía</div><div class="pdf-inline-viewer" id="infographicPdf" aria-label="Infografía en PDF"><div class="pdf-loading">CARGANDO INFOGRAFÍA EN PDF…</div></div><a class="pdf-link" id="infographicPdfLink" target="_blank" rel="noopener">ABRIR PDF COMPLETO</a></div>
+        <div class="infographic-wrap"><h3>Infografía del proyecto</h3><p>Resumen visual de la solución, integrantes, materiales, evidencia y propósito del sistema.</p><img class="infographic-image" src="INFOGRAFIA TICS IMAGEN.png" alt="Infografía completa del proyecto Semáforo IRTRA Petapa" /><div class="pdf-label">Versión PDF de la infografía</div><iframe class="pdf-view" id="infographicPdf" title="Infografía en PDF" src="https://raw.githubusercontent.com/emily2702/Proyecto-Final-Sem-foro/main/INFOGRAFI%CC%81A%20PROYECTO%20FINAL%20DE%20TICS%20%28PDF%29.pdf#toolbar=1&navpanes=1&scrollbar=1&view=FitH"></iframe><a class="pdf-link" id="infographicPdfLink" href="https://raw.githubusercontent.com/emily2702/Proyecto-Final-Sem-foro/main/INFOGRAFI%CC%81A%20PROYECTO%20FINAL%20DE%20TICS%20%28PDF%29.pdf" target="_blank" rel="noopener">ABRIR PDF COMPLETO</a></div>
       </div>
     </section>
 
@@ -378,75 +378,8 @@
       wordDirectLink.href=encodeURI(wordName);
     }
 
-    // Visores PDF integrados: renderizan cada página dentro del sitio para evitar que el navegador o GitHub Pages oculten el PDF.
-    const pdfFiles={
-      research:['PDF proyecto final TICS (1).pdf'],
-      infographic:['INFOGRAFÍA PROYECTO FINAL DE TICS (PDF).pdf','INFOGRAFÍA PROYECTO FINAL DE TICS (PDF).pdf']
-    };
-
-    function loadPdfJs(){
-      return new Promise((resolve,reject)=>{
-        if(window.pdfjsLib){resolve(window.pdfjsLib);return}
-        const script=document.createElement('script');
-        script.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-        script.onload=()=>{
-          if(!window.pdfjsLib){reject(new Error('pdfjs'));return}
-          window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-          resolve(window.pdfjsLib);
-        };
-        script.onerror=()=>reject(new Error('pdfjs'));
-        document.head.appendChild(script);
-      });
-    }
-
-    async function resolvePdfUrl(candidates){
-      if(location.protocol==='file:') return encodeURI(candidates[0]);
-      for(const name of candidates){
-        try{
-          const url=new URL(name,new URL('.',location.href)).href;
-          const r=await fetch(url,{cache:'no-store'});
-          if(r.ok) return url;
-        }catch(e){}
-      }
-      return new URL(candidates[0],new URL('.',location.href)).href;
-    }
-
-    async function renderPdf(container,candidates,link){
-      const url=await resolvePdfUrl(candidates);
-      if(link) link.href=url;
-      try{
-        const pdfjs=await loadPdfJs();
-        const pdf=await pdfjs.getDocument({url}).promise;
-        container.innerHTML='';
-        const targetWidth=900;
-        for(let n=1;n<=pdf.numPages;n++){
-          const page=await pdf.getPage(n);
-          const base=page.getViewport({scale:1});
-          const cssScale=targetWidth/base.width;
-          const outputScale=Math.min(window.devicePixelRatio||1,1.35);
-          const viewport=page.getViewport({scale:cssScale*outputScale});
-          const canvas=document.createElement('canvas');
-          const ctx=canvas.getContext('2d',{alpha:false});
-          canvas.width=Math.floor(viewport.width);
-          canvas.height=Math.floor(viewport.height);
-          canvas.style.aspectRatio=`${base.width} / ${base.height}`;
-          container.appendChild(canvas);
-          await page.render({canvasContext:ctx,viewport}).promise;
-        }
-      }catch(err){
-        container.innerHTML='';
-        const frame=document.createElement('iframe');
-        frame.className='pdf-fallback-frame';
-        frame.title='Vista PDF';
-        frame.src=(location.protocol==='http:'||location.protocol==='https:')
-          ? 'https://docs.google.com/gview?embedded=1&url='+encodeURIComponent(url)
-          : url+'#toolbar=1&navpanes=0&view=FitH';
-        container.appendChild(frame);
-      }
-    }
-
-    renderPdf(document.getElementById('researchPdf'),pdfFiles.research,document.querySelector('a[href="PDF proyecto final TICS (1).pdf"]'));
-    renderPdf(document.getElementById('infographicPdf'),pdfFiles.infographic,document.getElementById('infographicPdfLink'));
+    // Los dos PDF usan el visor PDF nativo del navegador dentro de iframes.
+    // Se mantienen las rutas codificadas para conservar espacios, paréntesis y la Í del nombre del archivo.
   </script>
 </body>
 </html>
