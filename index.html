@@ -8,7 +8,7 @@
 
     <style>
 
-        {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -59,24 +59,6 @@
                 transform: translateY(-15px) rotate(15deg);
             }
         }
-
-
-        /* LOGO IRTRA PETAPA */
-        .logo-irtra {
-            position: fixed;
-            top: 15px;
-            right: 20px;
-            width: 130px;
-            height: auto;
-            z-index: 200;
-            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.15));
-            transition: 0.3s;
-        }
-
-        .logo-irtra:hover {
-            transform: scale(1.05);
-        }
-
 
         nav {
             position: sticky;
@@ -185,7 +167,7 @@
         .roja { background: #ff9cac; }
         .amarilla { background: #ffe18c; }
         .verde { background: #a7e8a5; }
-
+        
         section {
             min-height: 85vh;
             padding: 90px 8%;
@@ -218,7 +200,6 @@
             color: #777;
             font-size: 17px;
         }
-
 
         .contenedor {
             max-width: 1100px;
@@ -262,7 +243,6 @@
             color: #666;
         }
 
-
         #circuito {
             background: rgba(255,255,255,0.15);
         }
@@ -297,16 +277,13 @@
             background: white;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
         }
-
-
+        
         .investigacion {
             background: linear-gradient(
                 135deg,
                 rgba(255,220,235,0.5),
                 rgba(215,238,255,0.5)
             );
-        }
-
 
         .info-card {
             text-align: center;
@@ -357,6 +334,7 @@
             margin-top: 25px;
         }
 
+
         .conclusion-box {
             max-width: 900px;
             margin: auto;
@@ -371,7 +349,6 @@
             font-size: 20px;
             line-height: 1.9;
         }
-
 
         footer {
             padding: 40px 20px;
@@ -406,12 +383,6 @@
             .subtitulo {
                 font-size: 17px;
             }
-
-            .logo-irtra {
-                width: 85px;
-                top: 10px;
-                right: 10px;
-            }
         }
 
     </style>
@@ -420,14 +391,11 @@
 
 <body>
 
-    <!-- LOGO IRTRA PETAPA -->
-    <img src="file_00000000f09482309f4f2ba80a4ae66e (1).png" alt="Semáforo Irtra Petapa" class="logo-irtra">
-
-
     <div class="estrella e1">✦</div>
     <div class="estrella e2">✧</div>
     <div class="estrella e3">✦</div>
     <div class="estrella e4">✧</div>
+
 
     <nav>
 
@@ -459,7 +427,7 @@
     <header id="inicio">
 
         <div class="mini-texto">
-            PROYECTO DE TECNOLOGÍA
+            PROYECTO DE TECNOLOGÍA 
         </div>
 
         <h1>
@@ -468,9 +436,8 @@
         </h1>
 
         <p class="subtitulo">
-           Semáforo para controlar colas en IRTRA
+            Semáforo contador de personas
         </p>
-
 
         <div class="semaforo">
 
@@ -482,10 +449,13 @@
 
         </div>
 
+
+        <a href="#circuito" class="boton">
+             Conoce el proyecto
+        </a>
+
     </header>
 
-
-    <!-- CIRCUITO TINKERCAD -->
 
     <section id="circuito">
 
@@ -498,123 +468,13 @@
                 </h2>
 
                 <p>
-                    Conoce nuestro circuito digital y físico en funcionamiento.
+                Nuestro circuito de Tinkercad
                 </p>
 
             </div>
 
 
             <div class="circuito-box">
-
-                <div class="tarjetas">
-
-
-                    <!-- FOTO -->
-
-                    <div class="tarjeta">
-
-                        <div class="icono">
-                            📸
-                        </div>
-
-                        <h3>
-                            Foto del circuito
-                        </h3>
-
-                        <p>
-                            Imagen de nuestro circuito realizado en Tinkercad.
-                        </p>
-
-                        <img
-                            src="PHOTO-2026-09-08-19-43-08.jpeg"
-                            alt="Foto del circuito Tinkercad"
-                            style="
-                                width:100%;
-                                max-height:300px;
-                                object-fit:contain;
-                                border-radius:20px;
-                                margin-top:20px;
-                            "
-                        >
-
-                    </div>
-
-
-                    <!-- VIDEO 1 -->
-
-                    <div class="tarjeta">
-
-                        <div class="icono">
-                            🎥
-                        </div>
-
-                        <h3>
-                            Video del circuito Tinkercad
-                        </h3>
-
-                        <p>
-                            Observa el funcionamiento de nuestro circuito digital.
-                        </p>
-
-                        <video
-                            controls
-                            style="
-                                width:100%;
-                                margin-top:20px;
-                                border-radius:20px;
-                            "
-                        >
-
-                            <source
-                                src="VIDEO-2026-09-08-19-53-51.mp4"
-                                type="video/mp4"
-                            >
-
-                            Tu navegador no puede reproducir este video.
-
-                        </video>
-
-                    </div>
-
-
-                    <!-- VIDEO 2 -->
-
-                    <div class="tarjeta">
-
-                        <div class="icono">
-                            🎬
-                        </div>
-
-                        <h3>
-                            Video del circuito físico
-                        </h3>
-
-                        <p>
-                            Observa nuestro circuito físico funcionando.
-                        </p>
-
-                        <video
-                            controls
-                            style="
-                                width:100%;
-                                margin-top:20px;
-                                border-radius:20px;
-                            "
-                        >
-
-                            <source
-                                src="VIDEO-2026-09-09-15-58-03.mp4"
-                                type="video/mp4"
-                            >
-
-                            Tu navegador no puede reproducir este video.
-
-                        </video>
-
-                    </div>
-
-
-                </div>
 
 
                 <div class="leds">
@@ -640,6 +500,7 @@
     </section>
 
 
+
     <section
         id="investigacion"
         class="investigacion"
@@ -650,12 +511,83 @@
             <div class="titulo-seccion">
 
                 <h2>
-                    Investigación Formal
+                    📚 Investigación Formal
                 </h2>
 
-                <p>
-                    Documento Word
-                </p>
+            </div>
+
+
+            <div class="tarjetas">
+
+
+                <div class="tarjeta">
+
+                    <div class="icono">
+                        💡
+                    </div>
+
+                    <h3>
+                        Planteamiento
+                    </h3>
+
+                </div>
+
+
+                <div class="tarjeta">
+
+                    <div class="icono">
+                        🔎
+                    </div>
+
+                    <h3>
+                        Objetivo
+                    </h3>
+
+                    <p>
+                        Diseñar una alternativa tecnológica que
+                        permita visualizar de manera sencilla
+                        la cantidad de personas dentro de un área.
+                    </p>
+
+                </div>
+
+
+                <div class="tarjeta">
+
+                    <div class="icono">
+                        ⚙️
+                    </div>
+
+                    <h3>
+                        Tecnología
+                    </h3>
+
+                    <p>
+                        El proyecto integra programación,
+                        electrónica y sensores para crear
+                        un sistema funcional.
+                    </p>
+
+                </div>
+
+
+                <div class="tarjeta">
+
+                    <div class="icono">
+                        🌎
+                    </div>
+
+                    <h3>
+                        Importancia
+                    </h3>
+
+                    <p>
+                        La tecnología puede utilizarse para
+                        mejorar la organización, seguridad y
+                        experiencia de las personas.
+                    </p>
+
+                </div>
 
             </div>
 
@@ -664,6 +596,11 @@
     </section>
 
 
+
+    <!-- =========================
+         INFOGRAFÍA
+    ========================= -->
+
     <section id="infografia">
 
         <div class="contenedor">
@@ -671,12 +608,32 @@
             <div class="titulo-seccion">
 
                 <h2>
-                    Infografía 🌈
+                    📝 Infografía
                 </h2>
 
                 <p>
-                    Infografía del proyecto
+                    Información resumida de nuestro proyecto
                 </p>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="emoji">
+                    🌈
+                </div>
+
+                <p>
+                    En esta sección se presentará la infografía
+                    realizada por nuestro equipo, donde se
+                    explicarán de manera visual los principales
+                    elementos, funcionamiento y características
+                    del <strong>Semáforo Irtra Petapa</strong>.
+                </p>
+
+
+                <!-- AQUÍ PUEDEN AGREGAR SU IMAGEN -->
 
                 <div
                     style="
@@ -694,19 +651,14 @@
                     "
                 >
 
-                    <!-- PDF DE LA INFOGRAFÍA -->
-                    <iframe
-                        src="infografia.pdf"
-                        width="100%"
-                        height="700px"
-                        style="
-                            border:none;
-                            border-radius:20px;
-                            background:white;
-                            box-shadow:0 8px 20px rgba(0,0,0,0.12);
-                        "
-                        title="Infografía Semáforo Irtra Petapa"
-                    ></iframe>
+                    <strong>
+                        ✨ ESPACIO PARA LA INFOGRAFÍA ✨
+                    </strong>
+
+                    <p style="margin-top:10px;">
+                        Pueden colocar aquí la imagen
+                        de su infografía.
+                    </p>
 
                 </div>
 
@@ -716,6 +668,11 @@
 
     </section>
 
+
+
+    <!-- =========================
+         PODCAST
+    ========================= -->
 
     <section
         id="podcast"
@@ -731,7 +688,7 @@
                 </h2>
 
                 <p>
-                    Escucha nuestro podcast sobre el proyecto.
+                    Escucha nuestro proyecto desde otra perspectiva
                 </p>
 
             </div>
@@ -752,22 +709,35 @@
                 </h3>
 
                 <p style="
+                    line-height:1.8;
                     font-size:17px;
-                    line-height:1.7;
-                    color:#666;
                 ">
-                    Conoce más sobre nuestro proyecto
-                    <strong>Semáforo Irtra Petapa</strong>
-                    a través de nuestro podcast.
+                    En este espacio compartiremos un podcast
+                    donde hablaremos sobre el proyecto, su
+                    funcionamiento, el proceso de creación y
+                    lo que aprendimos durante su desarrollo.
                 </p>
 
-                <a
-                    href="https://drive.google.com/file/d/15v3nV7FNiUeRuwQUdH6tuQFjV9FWL9Cc/view?usp=sharing"
-                    target="_blank"
-                    class="boton"
-                >
-                    🎧 Escuchar nuestro Podcast
-                </a>
+
+                <!--
+
+                CUANDO TENGAN EL AUDIO:
+
+                1. Suban el archivo MP3 a GitHub.
+                2. Cambien "podcast.mp3" por el nombre del archivo.
+
+                -->
+
+                <audio controls>
+
+                    <source
+                        src="podcast.mp3"
+                        type="audio/mpeg"
+                    >
+
+                    Tu navegador no puede reproducir este audio.
+
+                </audio>
 
             </div>
 
@@ -775,6 +745,11 @@
 
     </section>
 
+
+
+    <!-- =========================
+         CONCLUSIÓN
+    ========================= -->
 
     <section id="conclusion">
 
@@ -783,11 +758,49 @@
             <div class="titulo-seccion">
 
                 <h2>
-                    Final
+                    🌈 Nuestra Conclusión
                 </h2>
 
                 <p>
-                    Ccc
+                    Lo que aprendimos durante este proyecto
+                </p>
+
+            </div>
+
+
+            <div class="conclusion-box">
+
+                <p>
+
+                    La realización del proyecto
+                    <strong>Semáforo Irtra Petapa</strong>
+                    nos permitió comprender cómo la tecnología,
+                    la programación y la electrónica pueden
+                    combinarse para crear soluciones a
+                    situaciones de la vida cotidiana.
+
+                    <br><br>
+
+                    Durante el proceso aprendimos a trabajar
+                    en equipo, investigar, diseñar un circuito,
+                    plantear una solución tecnológica y
+                    comunicar nuestras ideas mediante diferentes
+                    herramientas digitales.
+
+                    <br><br>
+
+                    Más que construir un circuito, este proyecto
+                    nos permitió descubrir que una idea puede
+                    convertirse en una propuesta tecnológica
+                    cuando existe creatividad, organización y
+                    trabajo en equipo.
+
+                    <br><br>
+
+                    ✨ <strong>
+                    La tecnología comienza con una idea.
+                    </strong>
+
                 </p>
 
             </div>
@@ -797,10 +810,15 @@
     </section>
 
 
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
     <footer>
 
         <div class="corazon">
-            --
+            🌸 ✦ 🌈 ✦ 🌸
         </div>
 
         <br>
@@ -810,7 +828,7 @@
         </p>
 
         <p style="margin-top:8px;">
-            Teresa · Evangeline · Iliana · Emily
+            Hecho con creatividad, tecnología y trabajo en equipo ♡
         </p>
 
     </footer>
@@ -818,3 +836,4 @@
 
 </body>
 </html>
+```
